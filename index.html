@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خانه‌برق | لوازم خانگی اصیل</title>
+<meta name="description" content="خرید اینترنتی لوازم خانگی اصیل با گارانتی شرکتی و ارسال سریع">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+<style>
+/* ─── HERO ───────────────────────────────────────── */
+.hero {
+  position:relative; min-height:100vh;
+  display:grid; grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
+
+/* Glow */
+.hero::before {
+  content:''; position:absolute; top:-10%; right:-5%;
+  width:65%; aspect-ratio:1;
+  background:radial-gradient(ellipse at center,
+    rgba(249,115,22,0.10) 0%,
+    rgba(251,191,36,0.05) 40%,
+    transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+.hero-text {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:130px 56px 80px 72px;
+  opacity:0; transform:translateY(28px);
+  animation:fadeUp 0.7s 0.15s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+.hero-tag {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:600; color:var(--orange);
+  margin-bottom:28px; letter-spacing:0.5px;
+}
+.hero-tag::before {
+  content:''; width:28px; height:2px;
+  background:var(--orange); border-radius:2px;
+}
+
+.hero-title {
+  font-size:clamp(44px,5.5vw,82px);
+  font-weight:900; letter-spacing:-2.5px; line-height:1.04;
+  color:var(--text); margin-bottom:22px;
+}
+.hero-title em {
+  font-style:normal;
+  background:linear-gradient(135deg, var(--orange) 0%, var(--amber) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-desc {
+  font-size:16px; font-weight:400; line-height:1.85;
+  color:var(--muted); max-width:400px; margin-bottom:44px;
+}
+
+.hero-actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+
+.btn-hero {
+  padding:15px 36px; border-radius:50px;
+  font-size:15px; font-weight:700;
+  cursor:pointer; border:none;
+  position:relative; overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.btn-hero:hover { transform:translateY(-2px); }
+.btn-hero-primary {
+  background:var(--orange); color:#fff;
+}
+.btn-hero-primary:hover {
+  box-shadow:0 12px 36px rgba(249,115,22,0.45);
+}
+.btn-hero-ghost {
+  background:transparent; color:var(--muted);
+  border:1px solid var(--border-2);
+}
+.btn-hero-ghost:hover { color:var(--text); border-color:rgba(255,255,255,0.22); }
+
+.hero-stats {
+  display:flex; gap:36px; margin-top:52px;
+  padding-top:36px; border-top:1px solid var(--border);
+}
+.stat-value { font-size:26px; font-weight:900; letter-spacing:-1px; }
+.stat-label { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* ─── HERO IMAGE ──────────────────────────────────── */
+.hero-image {
+  position:relative; z-index:1;
+  opacity:0; transform:scale(0.97);
+  animation:fadeScale 0.9s 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-image-inner {
+  position:absolute; inset:0;
+  background:linear-gradient(160deg, #1C1C1C 0%, #141414 100%);
+  overflow:hidden;
+}
+.hero-image-inner img {
+  width:100%; height:100%; object-fit:cover; object-position:center;
+  filter:brightness(0.88) saturate(1.1);
+}
+/* watermark */
+.hero-image-inner::before {
+  content:'خانه‌برق'; position:absolute; bottom:-10px; left:-10px;
+  font-size:150px; font-weight:900; color:rgba(255,255,255,0.025);
+  line-height:1; letter-spacing:-4px; pointer-events:none; z-index:1;
+}
+/* overlay gradient */
+.hero-image-inner::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to left, transparent 60%, #0A0A0A 100%);
+  z-index:2;
+}
+
+/* badge */
+.hero-badge {
+  position:absolute; bottom:36px; right:36px; z-index:5;
+  background:rgba(20,20,20,0.88);
+  backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid rgba(249,115,22,0.2);
+  border-radius:16px; padding:16px 20px;
+  display:flex; align-items:center; gap:14px;
+  opacity:0; transform:translateY(12px);
+  animation:fadeUp 0.55s 0.85s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-badge-icon {
+  width:38px; height:38px; border-radius:10px;
+  background:linear-gradient(135deg, var(--orange), var(--amber));
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+}
+.hero-badge-label { font-size:11px; color:var(--muted); }
+.hero-badge-value { font-size:14px; font-weight:800; color:var(--text); margin-top:2px; }
+
+/* ─── CATEGORIES ──────────────────────────────────── */
+.categories {
+  padding:60px 72px;
+  border-top:1px solid var(--border);
+  position:relative; z-index:2;
+}
+.sec-label {
+  font-size:11px; font-weight:700; color:var(--muted);
+  letter-spacing:1px; margin-bottom:24px;
+}
+.cat-scroll {
+  display:flex; gap:10px; overflow-x:auto;
+  padding-bottom:6px; scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+}
+.cat-scroll::-webkit-scrollbar { display:none; }
+.cat-pill {
+  flex-shrink:0; scroll-snap-align:start;
+  display:flex; align-items:center; gap:10px;
+  padding:12px 22px; border-radius:50px;
+  border:1px solid var(--border-2);
+  background:var(--card);
+  font-size:13px; font-weight:600; color:var(--text);
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.cat-pill:hover {
+  border-color:var(--orange);
+  box-shadow:0 0 0 1px var(--orange), 0 6px 24px rgba(249,115,22,0.18);
+  transform:translateY(-2px);
+}
+.cat-pill.active {
+  background:var(--orange); border-color:transparent; color:#fff;
+}
+.cat-pill-icon { font-size:18px; }
+
+/* ─── FEATURED ────────────────────────────────────── */
+.featured { padding:0 72px 64px; position:relative; z-index:2; }
+.featured-wrap {
+  border-radius:20px; overflow:hidden;
+  display:grid; grid-template-columns:1fr 1fr;
+  background:var(--card); border:1px solid var(--border);
+  min-height:480px;
+}
+.featured-img {
+  position:relative; overflow:hidden;
+}
+.featured-img img {
+  width:100%; height:100%; object-fit:cover;
+  filter:brightness(0.82) saturate(1.15);
+  transition:transform 0.6s;
+}
+.featured-wrap:hover .featured-img img { transform:scale(1.04); }
+.featured-img::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to left, var(--card) 0%, transparent 55%);
+}
+.featured-body {
+  display:flex; flex-direction:column; justify-content:center;
+  padding:52px 48px;
+}
+.featured-eyebrow {
+  font-size:11px; font-weight:700; color:var(--orange);
+  letter-spacing:1px; margin-bottom:14px;
+}
+.featured-title {
+  font-size:clamp(22px,2.8vw,36px); font-weight:900;
+  letter-spacing:-0.8px; line-height:1.15; margin-bottom:16px;
+}
+.featured-price-wrap { display:flex; align-items:baseline; gap:10px; margin-bottom:28px; }
+.featured-price { font-size:28px; font-weight:900; color:var(--amber); }
+.featured-price-old { font-size:15px; color:var(--muted); text-decoration:line-through; }
+.featured-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+.ftag {
+  padding:5px 12px; border-radius:50px; font-size:11px; font-weight:700;
+  background:var(--orange-dim); border:1px solid rgba(249,115,22,0.2); color:var(--orange-2);
+}
+
+/* ─── PRODUCT GRID ────────────────────────────────── */
+.products { padding:0 72px 64px; position:relative; z-index:2; }
+.products-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; }
+.products-title { font-size:24px; font-weight:900; letter-spacing:-0.5px; }
+.products-more { font-size:13px; color:var(--orange-2); font-weight:700; transition:color 0.2s; }
+.products-more:hover { color:var(--amber); }
+.products-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+
+.pcard {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden; cursor:pointer;
+  transition:transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.pcard:hover {
+  transform:translateY(-4px);
+  border-color:rgba(249,115,22,0.22);
+  box-shadow:0 16px 48px rgba(0,0,0,0.5);
+}
+.pcard-img {
+  aspect-ratio:4/3; background:var(--surface); position:relative; overflow:hidden;
+}
+.pcard-img img {
+  width:100%; height:100%; object-fit:cover; transition:transform 0.4s;
+}
+.pcard:hover .pcard-img img { transform:scale(1.07); }
+.pcard-badge {
+  position:absolute; top:10px; right:10px;
+  padding:3px 10px; border-radius:50px; font-size:10px; font-weight:800;
+}
+.pcard-badge-sale { background:var(--red); color:#fff; }
+.pcard-badge-new  { background:var(--orange); color:#fff; }
+.pcard-badge-hot  { background:var(--amber); color:#0A0A0A; }
+.pcard-info { padding:14px; }
+.pcard-brand { font-size:10px; color:var(--muted); font-weight:700; margin-bottom:4px; letter-spacing:0.3px; }
+.pcard-name  { font-size:13px; font-weight:700; line-height:1.4; margin-bottom:12px; }
+.pcard-footer { display:flex; align-items:center; justify-content:space-between; }
+.pcard-price { font-size:15px; font-weight:900; color:var(--amber); }
+.pcard-old   { font-size:11px; color:var(--muted); text-decoration:line-through; }
+.pcard-add {
+  width:30px; height:30px; border-radius:8px; font-size:18px;
+  background:var(--orange-dim); border:1px solid rgba(249,115,22,0.2);
+  color:var(--orange-2); display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; cursor:pointer;
+}
+.pcard-add:hover { background:var(--orange); color:#fff; border-color:transparent; }
+
+/* ─── TRUST ───────────────────────────────────────── */
+.trust {
+  margin:0 72px 64px;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  background:var(--card); border:1px solid var(--border);
+  border-radius:18px; overflow:hidden;
+  position:relative; z-index:2;
+}
+.trust-item {
+  padding:32px 24px; border-left:1px solid var(--border);
+  display:flex; gap:14px; align-items:center;
+}
+.trust-item:last-child { border-left:none; }
+.trust-icon {
+  width:44px; height:44px; border-radius:10px; flex-shrink:0;
+  background:var(--orange-dim); font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+}
+.trust-title { font-size:13px; font-weight:800; margin-bottom:4px; }
+.trust-desc  { font-size:12px; color:var(--muted); line-height:1.55; }
+
+/* ─── BANNER ──────────────────────────────────────── */
+.banner {
+  margin:0 72px 72px; border-radius:20px; overflow:hidden;
+  position:relative; min-height:260px;
+  background:linear-gradient(135deg, #1A0D00 0%, #1C1C1C 60%, #141414 100%);
+  border:1px solid rgba(249,115,22,0.15);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 56px; z-index:2;
+}
+.banner::before {
+  content:''; position:absolute; right:-80px; top:-80px;
+  width:350px; height:350px; border-radius:50%;
+  background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.banner-content { position:relative; z-index:1; }
+.banner-tag { font-size:11px; color:var(--orange); font-weight:700; letter-spacing:1px; margin-bottom:12px; }
+.banner-title {
+  font-size:clamp(22px,3vw,40px); font-weight:900;
+  letter-spacing:-1px; line-height:1.1; margin-bottom:8px;
+}
+.banner-sub { font-size:14px; color:var(--muted); }
+.banner-right { position:relative; z-index:1; display:flex; flex-direction:column; align-items:flex-end; gap:20px; }
+.countdown { display:flex; gap:10px; }
+.cd-block {
+  background:rgba(255,255,255,0.05); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px; text-align:center; min-width:60px;
+}
+.cd-num { font-size:26px; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; }
+.cd-sep { font-size:11px; color:var(--muted); margin-top:4px; }
+
+/* ─── ANIMATIONS ──────────────────────────────────── */
+@keyframes fadeUp   { to { opacity:1; transform:translateY(0); } }
+@keyframes fadeScale{ to { opacity:1; transform:scale(1); } }
+
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:1000px) { .products-grid { grid-template-columns:repeat(3,1fr); } }
+@media(max-width:860px) {
+  .hero { grid-template-columns:1fr; grid-template-rows:auto 50vw; }
+  .hero-text { padding:110px 20px 40px; }
+  .categories,.featured,.products,.trust,.banner { padding-left:20px; padding-right:20px; }
+  .trust { margin:0 20px 48px; grid-template-columns:repeat(2,1fr); }
+  .trust-item { border-left:none; border-bottom:1px solid var(--border); }
+  .trust-item:nth-child(odd) { border-left:1px solid var(--border); }
+  .trust-item:nth-child(3),.trust-item:nth-child(4) { border-bottom:none; }
+  .featured-wrap { grid-template-columns:1fr; min-height:auto; }
+  .featured-img { min-height:240px; }
+  .featured-body { padding:28px 20px; }
+  .featured,.products { padding-bottom:40px; }
+  .banner { margin:0 20px 48px; flex-direction:column; gap:28px; padding:36px 20px; }
+  .banner-right { align-items:center; }
+  .products-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:500px) {
+  .trust { grid-template-columns:1fr; }
+  .trust-item { border-left:none !important; }
+  .hero-stats { gap:20px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .hero-text,.hero-image,.hero-badge { animation:none; opacity:1; transform:none; }
+}
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="home">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <span class="hero-tag">لوازم خانگی اصیل با گارانتی</span>
+    <h1 class="hero-title">
+      خانه‌ای که<br>
+      <em>هوشمند</em> است
+    </h1>
+    <p class="hero-desc">
+      از یخچال‌های نسل جدید تا ماشین‌های لباسشویی هوشمند —
+      همه با گارانتی معتبر شرکتی و ارسال سریع به سراسر ایران.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-hero btn-hero-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">
+        مشاهده فروشگاه
+      </button>
+      <a href="about.html" class="btn-hero btn-hero-ghost">بیشتر بدانید</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-value">+۱۲۰۰</div>
+        <div class="stat-label">محصول موجود</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">۴.۹ ★</div>
+        <div class="stat-label">امتیاز مشتریان</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">۳ روزه</div>
+        <div class="stat-label">ارسال سریع</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-image">
+    <div class="hero-image-inner">
+      <img src="assets/images/hero-appliance.jpg" alt="لوازم خانگی مدرن"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="hero-badge">
+      <div class="hero-badge-icon">🔥</div>
+      <div>
+        <div class="hero-badge-label">فروش ویژه</div>
+        <div class="hero-badge-value">تا ۴۰٪ تخفیف</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories" id="catalog">
+  <div class="sec-label">دسته‌بندی محصولات</div>
+  <div class="cat-scroll">
+    <button class="cat-pill active" data-cat="all"><span class="cat-pill-icon">🏠</span> همه</button>
+    <button class="cat-pill" data-cat="fridge"><span class="cat-pill-icon">🧊</span> یخچال و فریزر</button>
+    <button class="cat-pill" data-cat="washer"><span class="cat-pill-icon">🫧</span> ماشین لباسشویی</button>
+    <button class="cat-pill" data-cat="ac"><span class="cat-pill-icon">❄️</span> کولر گازی</button>
+    <button class="cat-pill" data-cat="oven"><span class="cat-pill-icon">🍳</span> اجاق و مایکروویو</button>
+    <button class="cat-pill" data-cat="vacuum"><span class="cat-pill-icon">🌀</span> جاروبرقی</button>
+    <button class="cat-pill" data-cat="tv"><span class="cat-pill-icon">📺</span> تلویزیون</button>
+    <button class="cat-pill" data-cat="kitchen"><span class="cat-pill-icon">☕</span> کوچک‌لوازم</button>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="featured">
+  <div class="featured-wrap">
+    <div class="featured-img">
+      <img src="assets/images/featured-product.jpg" alt="محصول ویژه" onerror="this.style.display='none'">
+    </div>
+    <div class="featured-body">
+      <div class="featured-eyebrow">پیشنهاد ویژه هفته</div>
+      <h2 class="featured-title">یخچال ساید بای ساید سامسونگ ۸۰۰ لیتری</h2>
+      <div class="featured-price-wrap">
+        <span class="featured-price">۴۸,۵۰۰,۰۰۰ تومان</span>
+        <span class="featured-price-old">۵۸,۰۰۰,۰۰۰</span>
+      </div>
+      <div class="featured-tags">
+        <span class="ftag">گارانتی ۲ ساله</span>
+        <span class="ftag">ارسال رایگان</span>
+        <span class="ftag">اصل کارخانه</span>
+      </div>
+      <button class="btn-hero btn-hero-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">مشاهده و خرید</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products">
+  <div class="products-header">
+    <h2 class="products-title">پرفروش‌ترین‌ها</h2>
+    <a href="#" class="products-more">مشاهده همه →</a>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="trust-item">
+    <div class="trust-icon">🚚</div>
+    <div><div class="trust-title">ارسال سریع</div><div class="trust-desc">تحویل در کمتر از ۳ روز به سراسر کشور</div></div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">🛡️</div>
+    <div><div class="trust-title">گارانتی معتبر</div><div class="trust-desc">گارانتی شرکتی اصلی با پشتیبانی رسمی</div></div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">🔄</div>
+    <div><div class="trust-title">بازگشت آسان</div><div class="trust-desc">۷ روز ضمانت بازگشت بدون قید و شرط</div></div>
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">💳</div>
+    <div><div class="trust-title">پرداخت امن</div><div class="trust-desc">درگاه امن زرین‌پال با رمز دوم پویا</div></div>
+  </div>
+</div>
+
+<!-- BANNER -->
+<div class="banner">
+  <div class="banner-content">
+    <div class="banner-tag">جشنواره پایان فصل</div>
+    <h2 class="banner-title">تخفیف‌های استثنایی<br>تا ۵۰٪</h2>
+    <p class="banner-sub">فرصت محدود — فقط تا پایان این هفته</p>
+  </div>
+  <div class="banner-right">
+    <div class="countdown">
+      <div class="cd-block"><div class="cd-num" id="cdH">12</div><div class="cd-sep">ساعت</div></div>
+      <div class="cd-block"><div class="cd-num" id="cdM">34</div><div class="cd-sep">دقیقه</div></div>
+      <div class="cd-block"><div class="cd-num" id="cdS">56</div><div class="cd-sep">ثانیه</div></div>
+    </div>
+    <button class="btn-hero btn-hero-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">
+      مشاهده تخفیف‌ها
+    </button>
+  </div>
+</div>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+/* ============================================================
+   HomeShop — product-detail.css
+   گالری چندعکسی، جدول مشخصات، بخش نظرات مشتریان
+   ============================================================ */
+.pd{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;}
+
+.gallery-main{
+  height:340px; background:var(--bg); border:1px solid var(--line); border-radius:var(--radius-lg);
+  display:flex; align-items:center; justify-content:center; font-size:70px; overflow:hidden; position:relative;
+}
+.gallery-main img{width:100%; height:100%; object-fit:cover;}
+.gallery-nav-btn{
+  position:absolute; top:50%; transform:translateY(-50%); width:32px; height:32px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--line); font-size:16px; display:flex;
+  align-items:center; justify-content:center; transition:border-color var(--t);
+}
+.gallery-nav-btn:hover{border-color:var(--line-strong);}
+.gallery-nav-btn.prev{right:12px;}
+.gallery-nav-btn.next{left:12px;}
+.gallery-thumbs{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+.gallery-thumb{
+  width:58px; height:58px; border-radius:4px; overflow:hidden; cursor:pointer; flex-shrink:0;
+  border:1px solid var(--line); opacity:.55; transition:all var(--t);
+}
+.gallery-thumb img{width:100%; height:100%; object-fit:cover;}
+.gallery-thumb.active{border-color:var(--ink); opacity:1;}
+
+.pd h1{font-size:26px; margin-bottom:8px;}
+.pd .price-big{font-family:var(--mono); font-size:24px; font-weight:600; margin:14px 0;}
+.pd .specs{margin:18px 0; border-top:1px solid var(--line);}
+.pd .specs div{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+.pd .specs div span:first-child{color:var(--muted);}
+.pd .specs div span:last-child{font-family:var(--mono);}
+.qty-select{display:flex; align-items:center; gap:10px; margin:18px 0;}
+.qty-box{display:flex; align-items:center; gap:6px;}
+.qty-box button{width:24px; height:24px; border:1px solid var(--line); border-radius:4px; background:transparent; font-family:var(--mono);}
+.qty-box button:hover{border-color:var(--line-strong);}
+
+/* ---------- Reviews ---------- */
+.reviews-block{margin-top:34px; padding-top:24px; border-top:1px solid var(--line);}
+.reviews-block h3{font-size:16px; margin-bottom:14px;}
+.review-item{border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;}
+.review-item .rev-head{display:flex; justify-content:space-between; margin-bottom:4px; font-size:13px;}
+.review-item .rev-name{font-weight:700;}
+.review-item .rev-stars{color:var(--warn); font-size:12px; font-family:var(--mono);}
+.review-item .rev-text{font-size:13px; line-height:1.7;}
+.review-form{margin-top:16px; border:1px solid var(--line); border-radius:var(--radius); padding:16px;}
+.star-input{display:flex; gap:6px; margin-bottom:10px; font-size:20px;}
+.star-input button{color:var(--line-strong); transition:color .1s;}
+.star-input button.on{color:var(--warn);}
+
+/* ---------- Related products ---------- */
+.related-section{margin-top:50px; padding-top:30px; border-top:1px solid var(--line);}
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb{font-size:12.5px; color:var(--muted); margin-bottom:18px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.breadcrumb a{color:var(--muted); transition:color .15s;}
+.breadcrumb a:hover{color:var(--accent);}
+.breadcrumb-current{color:var(--ink); font-weight:600;}

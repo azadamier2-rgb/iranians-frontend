@@ -1,0 +1,6 @@
+/* ============================================================
+   HomeShop — contact.css
+   ============================================================ */
+.contact-info{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:26px;}
+.contact-info-item{border:1px solid var(--line); border-radius:var(--radius); padding:14px 18px; font-size:13px; color:var(--muted); flex:1; min-width:160px;}
+.contact-info-item strong{display:block; color:var(--ink); font-size:13.5px; margin-bottom:4px;}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صفحه یافت نشد | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+<style>
+.not-found {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 40px;
+  position: relative; z-index: 2;
+}
+.nf-code {
+  font-size: clamp(100px, 18vw, 180px);
+  font-weight: 900; line-height: 1; letter-spacing: -6px;
+  background: linear-gradient(135deg, var(--orange-2) 0%, var(--amber) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+.nf-title { font-size: 28px; font-weight: 800; margin: 16px 0 12px; letter-spacing: -0.5px; }
+.nf-desc { font-size: 15px; color: var(--muted); max-width: 380px; margin: 0 auto 36px; line-height: 1.8; }
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body>
+<main>
+  <div class="not-found">
+    <div>
+      <div class="nf-code">404</div>
+      <h1 class="nf-title">صفحه یافت نشد</h1>
+      <p class="nf-desc">صفحه‌ای که به دنبال آن بودید وجود ندارد یا جابجا شده است</p>
+      <div class="ds-flex ds-gap-12" style="justify-content:center;flex-wrap:wrap">
+        <a href="index.html" class="ds-btn ds-btn-primary ds-btn-lg">بازگشت به خانه</a>
+        <a href="shipment-tracking.html" class="ds-btn ds-btn-ghost ds-btn-lg">رهگیری سفارش</a>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/js/ui.js"></script>
+</body>
+</html>

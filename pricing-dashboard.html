@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تنظیمات قیمت‌گذاری خودکار | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+<style>
+.pricing-wrap { max-width: 860px; margin: 0 auto; padding: 0 20px 60px; }
+.status-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-xl); padding: 24px; margin-bottom: 20px;
+}
+.status-card.active  { border-color: rgba(34,197,94,0.3); }
+.status-card.warning { border-color: rgba(234,179,8,0.3); }
+.status-card.error   { border-color: rgba(239,68,68,0.3); }
+
+.rate-display {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px; margin-bottom: 20px;
+}
+.rate-box {
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 20px; text-align: center;
+  border: 1px solid var(--border);
+}
+.rate-num  { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+.rate-lbl  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.logic-explain {
+  background: var(--surface); border-radius: var(--r-md);
+  padding: 16px; margin: 16px 0; border-right: 3px solid var(--orange);
+  font-size: 13px; line-height: 1.9; color: var(--text-2);
+}
+.logic-explain strong { color: var(--amber); }
+
+.log-row {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border); font-size: 13px;
+  align-items: flex-start;
+}
+.log-row:last-child { border: none; }
+.log-badge {
+  padding: 3px 10px; border-radius: 50px; font-size: 10px;
+  font-weight: 700; flex-shrink: 0;
+}
+.log-success { background: var(--green-dim); color: var(--green); }
+.log-skip    { background: var(--yellow-dim); color: var(--yellow); }
+.log-fail    { background: var(--red-dim); color: var(--red); }
+.log-msg     { flex: 1; color: var(--muted); }
+.log-time    { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+.tab-strip { display: flex; gap: 4px; margin-bottom: 20px; }
+.tab-btn {
+  padding: 9px 20px; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 700; color: var(--muted);
+  background: var(--card); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s;
+}
+.tab-btn.active {
+  background: var(--orange-dim); color: var(--orange);
+  border-color: rgba(249,115,22,0.25);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.trigger-preview {
+  background: var(--surface); border-radius: var(--r-md);
+  padding: 16px; margin-top: 20px; font-size: 14px;
+  border: 1px solid var(--border);
+}
+
+@media(max-width:700px) {
+  .rate-display { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="admin">
+<main>
+  <div class="ds-page-hero">
+    <span class="ds-page-hero-tag">پنل ادمین</span>
+    <h1>قیمت‌گذاری خودکار</h1>
+    <p>تنظیم آستانه تغییر دلار و ضریب افزایش قیمت محصولات</p>
+  </div>
+
+  <div class="pricing-wrap">
+
+    <!-- وضعیت فعلی -->
+    <div class="status-card" id="statusCard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:800">وضعیت سیستم</div>
+        <div style="display:flex;gap:8px">
+          <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="loadData()">↻ بروزرسانی</button>
+          <button class="ds-btn ds-btn-primary ds-btn-sm" id="runNowBtn" onclick="runNow()">▶ اجرا همین الان</button>
+        </div>
+      </div>
+
+      <div class="rate-display">
+        <div class="rate-box">
+          <div class="rate-num" id="currentRate" style="color:var(--amber)">—</div>
+          <div class="rate-lbl">نرخ فعلی دلار (تومان)</div>
+        </div>
+        <div class="rate-box">
+          <div class="rate-num" id="referenceRate" style="color:var(--text-2)">—</div>
+          <div class="rate-lbl">نرخ مرجع (پایه مقایسه)</div>
+        </div>
+        <div class="rate-box">
+          <div class="rate-num" id="changePct">—</div>
+          <div class="rate-lbl">تغییر از مرجع</div>
+        </div>
+      </div>
+
+      <div id="lastRunInfo" style="font-size:13px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px"></div>
+    </div>
+
+    <!-- تب‌ها -->
+    <div class="tab-strip">
+      <button class="tab-btn active" onclick="showTab('settings',this)">⚙️ تنظیمات</button>
+      <button class="tab-btn" onclick="showTab('reference',this)">📍 نرخ مرجع</button>
+      <button class="tab-btn" onclick="showTab('testurl',this)">🔗 تست آدرس</button>
+      <button class="tab-btn" onclick="showTab('logs',this)">📋 تاریخچه</button>
+    </div>
+
+    <!-- تنظیمات اصلی -->
+    <div class="tab-panel active" id="tab-settings">
+      <div class="ds-card">
+        <div class="ds-card-body">
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">تنظیمات قیمت‌گذاری</h3>
+
+          <div class="logic-explain" id="logicPreview">
+            اگر دلار <strong id="prev-thr">۵</strong>٪ گران شد،
+            قیمت محصولات را <strong id="prev-adj">۲</strong>٪ افزایش بده
+          </div>
+
+          <div class="ds-alert" id="settingsErr"></div>
+          <div class="ds-alert ds-alert-success" id="settingsOk" style="display:none"></div>
+
+          <!-- فعال/غیرفعال -->
+          <div class="ds-form-field">
+            <label>وضعیت آپدیت خودکار</label>
+            <select id="autoEnabled" class="ds-select">
+              <option value="true">✅ فعال — هر ۸ ساعت بررسی می‌شود</option>
+              <option value="false">⛔ غیرفعال — فقط دستی</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <!-- آستانه دلار -->
+            <div class="ds-form-field">
+              <label>آستانه تغییر دلار (٪)</label>
+              <input type="number" id="threshold" class="ds-input"
+                     min="0.1" max="100" step="0.1" placeholder="مثال: ۵">
+              <span class="ds-form-hint">اگر دلار بیشتر از این مقدار گران شد، آپدیت انجام می‌شود</span>
+            </div>
+
+            <!-- ضریب افزایش -->
+            <div class="ds-form-field">
+              <label>ضریب افزایش محصولات (٪)</label>
+              <input type="number" id="adjustPct" class="ds-input"
+                     min="0.1" max="100" step="0.1" placeholder="مثال: ۲">
+              <span class="ds-form-hint">قیمت همه محصولات به این اندازه افزایش می‌یابد</span>
+            </div>
+          </div>
+
+          <!-- آدرس سفارشی -->
+          <div class="ds-form-field">
+            <label>آدرس یا IP عمومی منبع نرخ ارز (اختیاری)</label>
+            <div style="display:flex;gap:8px">
+              <input type="url" id="customUrl" class="ds-input"
+                     placeholder="https://... (خالی = navasan.tech پیش‌فرض)">
+              <button class="ds-btn ds-btn-ghost ds-btn-sm"
+                      style="white-space:nowrap" onclick="testCurrentUrl()">
+                تست
+              </button>
+            </div>
+            <span class="ds-form-hint" id="urlTestResult">
+              اگر خالی باشد، نرخ از navasan.tech دریافت می‌شود. IPهای خصوصی و داخلی مجاز نیستند.
+            </span>
+          </div>
+
+          <button class="ds-btn ds-btn-primary" onclick="saveSettings()">
+            💾 ذخیره تنظیمات
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- نرخ مرجع -->
+    <div class="tab-panel" id="tab-reference">
+      <div class="ds-card">
+        <div class="ds-card-body">
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">تنظیم نرخ مرجع</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.8">
+            نرخ مرجع، پایه مقایسه است.<br>
+            مثال: اگر الان دلار ۵۰,۰۰۰ تومان است و شما آن را به‌عنوان مرجع ثبت کنید،
+            وقتی دلار به ۵۲,۵۰۰ رسید (۵٪ رشد)، آپدیت اعمال می‌شود.
+          </p>
+
+          <div class="ds-alert" id="refErr"></div>
+          <div class="ds-alert ds-alert-success" id="refOk" style="display:none"></div>
+
+          <div class="ds-form-field">
+            <label>نرخ مرجع جدید (تومان)</label>
+            <input type="number" id="refRate" class="ds-input"
+                   placeholder="مثال: 50000">
+          </div>
+
+          <div style="display:flex;gap:12px">
+            <button class="ds-btn ds-btn-primary" onclick="saveReference()">
+              📍 تنظیم نرخ مرجع
+            </button>
+            <button class="ds-btn ds-btn-ghost" onclick="useCurrentAsRef()">
+              ↻ استفاده از نرخ فعلی دلار
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تست آدرس -->
+    <div class="tab-panel" id="tab-testurl">
+      <div class="ds-card">
+        <div class="ds-card-body">
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:8px">تست آدرس سفارشی</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.8">
+            قبل از ذخیره کردن آدرس، می‌توانید آن را اینجا تست کنید تا مطمئن شوید نرخ درست دریافت می‌شود.
+          </p>
+
+          <div class="ds-form-field">
+            <label>آدرس API / سایت یا IP عمومی نرخ ارز</label>
+            <input type="url" id="testUrlInput" class="ds-input"
+                   placeholder="https://...">
+          </div>
+
+          <button class="ds-btn ds-btn-primary" onclick="runTestUrl()">🔍 تست</button>
+
+          <div id="testUrlResult" style="margin-top:16px"></div>
+
+          <div class="ds-card ds-mt-24" style="background:var(--surface)">
+            <div class="ds-card-body" style="font-size:13px;color:var(--muted);line-height:1.9">
+              <strong style="color:var(--text)">فرمت‌های پشتیبانی‌شده:</strong><br>
+              ✅ JSON با فیلد <code>value</code>, <code>rate</code>, <code>price</code>, <code>usd</code><br>
+              ✅ عدد ساده در متن پاسخ (مثلاً <code>52500</code>)<br>
+              ✅ JSON تو‌در‌تو (مثلاً <code>&#123;"data": &#123;"usd": 52500&#125;&#125;</code>)<br>
+              ⚠️ صفحات HTML پیچیده پشتیبانی نمی‌شوند
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تاریخچه تغییرات -->
+    <div class="tab-panel" id="tab-logs">
+      <div class="ds-card">
+        <div class="ds-card-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-size:16px;font-weight:800">تاریخچه آپدیت قیمت‌ها</h3>
+            <button class="ds-btn ds-btn-ghost ds-btn-sm" onclick="loadLogs()">↻</button>
+          </div>
+          <div id="logsContainer">
+            <div style="text-align:center;color:var(--muted);padding:40px">در حال بارگذاری...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pricing-wrap -->
+</main>
+
+<script src="assets/js/ui.js"></script>
+<script>
+const PRICING_API = DS.API + '/pricing';
+
+async function apiReq(path, opts={}) {
+  const res = await fetch(PRICING_API + path, {
+    credentials: 'include',
+    headers: { 'Content-Type':'application/json' },
+    ...opts,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'خطا');
+  return data;
+}
+
+/* ── Tab ──────────────────────────────────────────── */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'logs') loadLogs();
+}
+
+/* ── Load current status ─────────────────────────── */
+async function loadData() {
+  try {
+    // تنظیمات
+    const { config } = await apiReq('/config');
+    document.getElementById('autoEnabled').value = config.autoUpdateEnabled ? 'true' : 'false';
+    document.getElementById('threshold').value   = config.usdThresholdPercent;
+    document.getElementById('adjustPct').value   = config.productAdjustPercent;
+    document.getElementById('customUrl').value   = config.customRateUrl || '';
+
+    // نرخ مرجع
+    document.getElementById('referenceRate').textContent =
+      config.referenceRate ? config.referenceRate.toLocaleString('fa-IR') : '—';
+
+    // آخرین اجرا
+    if (config.lastRunAt) {
+      const dt    = new Date(config.lastRunAt).toLocaleString('fa-IR');
+      const badge = config.lastRunStatus === 'SUCCESS' ? '✅'
+                  : config.lastRunStatus === 'FAILED'  ? '❌' : '⚪';
+      document.getElementById('lastRunInfo').innerHTML =
+        `${badge} آخرین اجرا: ${dt} — ${h(config.lastRunMessage || '')}`;
+    }
+
+    updatePreview();
+
+    // نرخ فعلی
+    try {
+      const rate = await apiReq('/current-rate');
+      document.getElementById('currentRate').textContent =
+        rate.currentRate.toLocaleString('fa-IR');
+      const chg = parseFloat(rate.changePercent);
+      const el  = document.getElementById('changePct');
+      el.textContent = isNaN(chg) ? '—' : (chg >= 0 ? '+' : '') + chg + '٪';
+      el.style.color = chg >= config.usdThresholdPercent ? 'var(--green)'
+                     : chg > 0 ? 'var(--amber)' : 'var(--red)';
+    } catch (_) {
+      document.getElementById('currentRate').textContent = 'خطا';
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/* ── Save settings ───────────────────────────────── */
+async function saveSettings() {
+  DS.hideAlert(document.getElementById('settingsErr'));
+  document.getElementById('settingsOk').style.display = 'none';
+
+  try {
+    const body = {
+      autoUpdateEnabled:    document.getElementById('autoEnabled').value === 'true',
+      usdThresholdPercent:  parseFloat(document.getElementById('threshold').value),
+      productAdjustPercent: parseFloat(document.getElementById('adjustPct').value),
+      customRateUrl:        document.getElementById('customUrl').value.trim() || null,
+    };
+
+    if (isNaN(body.usdThresholdPercent) || body.usdThresholdPercent <= 0) {
+      return DS.showAlert(document.getElementById('settingsErr'), 'error', 'آستانه باید عدد مثبت باشد');
+    }
+    if (isNaN(body.productAdjustPercent) || body.productAdjustPercent <= 0) {
+      return DS.showAlert(document.getElementById('settingsErr'), 'error', 'ضریب باید عدد مثبت باشد');
+    }
+
+    await apiReq('/config', { method: 'PATCH', body: JSON.stringify(body) });
+
+    const ok = document.getElementById('settingsOk');
+    ok.style.display = 'block';
+    ok.className = 'ds-alert ds-alert-success show';
+    ok.textContent = '✅ تنظیمات ذخیره شد';
+    updatePreview();
+    setTimeout(() => ok.style.display='none', 3000);
+  } catch(e) {
+    DS.showAlert(document.getElementById('settingsErr'), 'error', e.message);
+  }
+}
+
+/* ── Run now ─────────────────────────────────────── */
+async function runNow() {
+  const btn = document.getElementById('runNowBtn');
+  DS.setLoading(btn, true);
+  try {
+    const { result } = await apiReq('/run-now', { method: 'POST' });
+    const msg = result.skipped
+      ? `رد شد: ${h(result.reason)}`
+      : result.success
+      ? `✅ ${result.updatedCount} محصول آپدیت شد — دلار +${result.changePercent?.toFixed(1)}٪`
+      : `❌ خطا: ${h(result.error)}`;
+    alert(msg);
+    loadData();
+  } catch(e) {
+    alert('خطا: ' + e.message);
+  } finally {
+    DS.setLoading(btn, false);
+  }
+}
+
+/* ── Save reference ──────────────────────────────── */
+async function saveReference() {
+  DS.hideAlert(document.getElementById('refErr'));
+  document.getElementById('refOk').style.display = 'none';
+  const rate = parseFloat(document.getElementById('refRate').value);
+  if (!rate || rate < 1000) {
+    return DS.showAlert(document.getElementById('refErr'), 'error', 'نرخ باید عدد معتبر باشد (تومان)');
+  }
+  try {
+    await apiReq('/set-reference', { method: 'POST', body: JSON.stringify({ rate }) });
+    const ok = document.getElementById('refOk');
+    ok.style.display = 'block';
+    ok.textContent = `✅ نرخ مرجع به ${rate.toLocaleString('fa-IR')} تومان تنظیم شد`;
+    loadData();
+  } catch(e) {
+    DS.showAlert(document.getElementById('refErr'), 'error', e.message);
+  }
+}
+
+async function useCurrentAsRef() {
+  try {
+    const rate = await apiReq('/current-rate');
+    document.getElementById('refRate').value = rate.currentRate;
+    document.getElementById('refErr').textContent = '';
+  } catch(e) {
+    alert('نتوانست نرخ فعلی را دریافت کند: ' + e.message);
+  }
+}
+
+/* ── Test URL ────────────────────────────────────── */
+async function testCurrentUrl() {
+  const url = document.getElementById('customUrl').value.trim();
+  if (!url) return;
+  const el = document.getElementById('urlTestResult');
+  el.textContent = '⏳ در حال بررسی...';
+  el.style.color = 'var(--muted)';
+  try {
+    const r = await apiReq('/test-url?url=' + encodeURIComponent(url));
+    el.textContent = `✅ ${r.message}`;
+    el.style.color = 'var(--green)';
+  } catch(e) {
+    el.textContent = '❌ ' + e.message;
+    el.style.color = 'var(--red)';
+  }
+}
+
+async function runTestUrl() {
+  const url = document.getElementById('testUrlInput').value.trim();
+  if (!url) return;
+  const div = document.getElementById('testUrlResult');
+  div.innerHTML = '<span style="color:var(--muted)">⏳ در حال بررسی...</span>';
+  try {
+    const r = await apiReq('/test-url?url=' + encodeURIComponent(url));
+    div.innerHTML = `<div class="ds-alert ds-alert-success show">${h(r.message)}</div>`;
+  } catch(e) {
+    div.innerHTML = `<div class="ds-alert ds-alert-error show">❌ ${h(e.message)}</div>`;
+  }
+}
+
+/* ── Logs ────────────────────────────────────────── */
+async function loadLogs() {
+  try {
+    const { logs } = await apiReq('/logs');
+    const container = document.getElementById('logsContainer');
+    if (!logs.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px">هنوز تاریخچه‌ای ثبت نشده</div>';
+      return;
+    }
+    container.innerHTML = logs.map(l => `
+      <div class="log-row">
+        <span class="log-badge ${l.source === 'AUTO' ? 'log-success' : 'log-skip'}">
+          ${l.source === 'AUTO' ? 'خودکار' : 'دستی'}
+        </span>
+        <span class="log-msg">
+          <strong>${h(l.product?.name || l.productId)}</strong>
+          — قیمت: ${l.oldPrice.toLocaleString('fa-IR')} → ${l.newPrice.toLocaleString('fa-IR')} تومان
+          ${l.exchangeRate ? `| نرخ دلار: ${l.exchangeRate.toLocaleString('fa-IR')}` : ''}
+        </span>
+        <span class="log-time">${new Date(l.createdAt).toLocaleString('fa-IR')}</span>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('logsContainer').innerHTML =
+      `<div class="ds-alert ds-alert-error show">خطا: ${h(e.message)}</div>`;
+  }
+}
+
+/* ── Preview ─────────────────────────────────────── */
+function updatePreview() {
+  const thr = document.getElementById('threshold').value;
+  const adj = document.getElementById('adjustPct').value;
+  document.getElementById('prev-thr').textContent = thr || '۵';
+  document.getElementById('prev-adj').textContent = adj || '۲';
+}
+document.getElementById('threshold').addEventListener('input', updatePreview);
+document.getElementById('adjustPct').addEventListener('input', updatePreview);
+
+/* ── Init ────────────────────────────────────────── */
+loadData();
+</script>
+</body>
+</html>

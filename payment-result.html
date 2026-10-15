@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پرداخت موفق | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="payment">
+<main>
+  <div class="ds-result-wrap">
+    <div class="ds-result-box">
+      <div class="ds-result-icon">✅</div>
+      <h1 class="ds-result-title">پرداخت موفق</h1>
+      <p class="ds-result-sub">سفارش شما ثبت شد و در حال پردازش است. کد پیگیری از طریق پیامک ارسال خواهد شد.</p>
+      <div class="ds-result-detail" id="resultDetail">
+        <div class="ds-result-detail-row"><span>کد پیگیری</span><span id="refId" style="font-weight:700">—</span></div>
+        <div class="ds-result-detail-row"><span>شماره سفارش</span><span id="orderId" style="font-weight:700">—</span></div>
+        <div class="ds-result-detail-row"><span>مبلغ پرداختی</span><span id="amount" style="color:var(--amber);font-weight:700">—</span></div>
+      </div>
+      <div class="ds-flex ds-gap-12" style="justify-content:center;flex-wrap:wrap">
+        <a href="shipment-tracking.html" class="ds-btn ds-btn-primary">رهگیری سفارش</a>
+        <a href="index.html" class="ds-btn ds-btn-ghost">بازگشت به فروشگاه</a>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/js/ui.js"></script>
+<script>
+const p = new URLSearchParams(location.search);
+if (p.get('ref_id'))  document.getElementById('refId').textContent  = p.get('ref_id');
+if (p.get('order_id'))document.getElementById('orderId').textContent= '#' + p.get('order_id');
+if (p.get('amount'))  document.getElementById('amount').textContent  = parseInt(p.get('amount')).toLocaleString('fa') + ' تومان';
+</script>
+</body>
+</html>

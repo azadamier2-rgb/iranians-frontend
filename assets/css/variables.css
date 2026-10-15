@@ -1,0 +1,28 @@
+/* ============================================================
+   HomeShop (خانه‌برق) — variables.css
+   توکن‌های طراحی: رنگ، تایپوگرافی، فاصله‌ها، شعاع گوشه‌ها
+   سبک: مینیمال ۲۰۲۶ — کاغذی و روشن، یک رنگ تاکیدی محدود
+   ============================================================ */
+:root{
+  --bg:#FAFAF7;
+  --surface:#FFFFFF;
+  --ink:#14151A;
+  --muted:#6B6F76;
+  --faint:#9A9DA3;
+  --line: rgba(20,21,26,0.12);
+  --line-strong: rgba(20,21,26,0.22);
+  --accent:#2440E0;
+  --accent-ink:#FFFFFF;
+  --accent-soft: rgba(36,64,224,0.07);
+  --danger:#C1362B;
+  --danger-soft: rgba(193,54,43,0.08);
+  --ok:#1E7A46;
+  --ok-soft: rgba(30,122,70,0.08);
+  --warn:#8A5A10;
+  --warn-soft: rgba(230,180,60,0.14);
+  --radius:6px;
+  --radius-lg:10px;
+  --mono:'IBM Plex Mono', monospace;
+  --t:.15s ease;
+  --container-max:1180px;
+}

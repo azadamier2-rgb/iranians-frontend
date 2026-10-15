@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درباره ما | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+<style>
+.about-hero {
+  min-height: 50vh;
+  display: flex; align-items: center;
+  padding: 80px 64px;
+  background: radial-gradient(ellipse at 70% 50%, rgba(249,115,22,0.08) 0%, transparent 60%);
+  position: relative; z-index: 2;
+}
+.about-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
+.about-value { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 28px; }
+.about-value-icon { font-size: 36px; margin-bottom: 16px; }
+.about-value-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+.about-value-desc { font-size: 13px; color: var(--muted); line-height: 1.8; }
+.about-stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin: 40px 0; }
+.about-stat { text-align: center; }
+.about-stat-num { font-size: 40px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(135deg,var(--orange-2),var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.about-stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+@media(max-width:900px) {
+  .about-hero { padding: 60px 20px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-stat-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="about">
+<main>
+  <div class="about-hero">
+    <div>
+      <span class="ds-page-hero-tag">داستان ما</span>
+      <h1 style="font-size:clamp(36px,5vw,64px);font-weight:900;letter-spacing:-2px;line-height:1.05;max-width:600px">
+        یک دهه کنار خانواده‌های ایرانی
+      </h1>
+      <p style="font-size:16px;color:var(--muted);max-width:480px;line-height:1.8;margin-top:16px">
+        از سال ۱۳۹۳ تا امروز، هدف ما یک چیز بوده: رساندن بهترین لوازم خانگی با قیمت منصفانه و خدمات صادقانه.
+      </p>
+      <a href="index.html" class="ds-btn ds-btn-primary ds-btn-lg" style="margin-top:32px">مشاهده فروشگاه</a>
+    </div>
+  </div>
+
+  <div class="ds-section">
+    <div class="about-stat-grid">
+      <div class="about-stat"><div class="about-stat-num">+۱۰</div><div class="about-stat-label">سال تجربه</div></div>
+      <div class="about-stat"><div class="about-stat-num">+۵۰K</div><div class="about-stat-label">مشتری راضی</div></div>
+      <div class="about-stat"><div class="about-stat-num">+۱۲۰۰</div><div class="about-stat-label">محصول موجود</div></div>
+      <div class="about-stat"><div class="about-stat-num">۴.۹</div><div class="about-stat-label">امتیاز مشتریان</div></div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">ارزش‌های ما</h2>
+    <p style="color:var(--muted);margin-bottom:24px">اصولی که هر روز راهنمای ما هستند</p>
+
+    <div class="about-grid">
+      <div class="about-value">
+        <div class="about-value-icon">🛡️</div>
+        <div class="about-value-title">اصالت کالا</div>
+        <div class="about-value-desc">تمام محصولات مستقیم از نمایندگی رسمی برندها تأمین می‌شوند. هرگز محصول غیر اصل نداریم.</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-icon">🤝</div>
+        <div class="about-value-title">صداقت در قیمت</div>
+        <div class="about-value-desc">قیمت‌های ما روز به روز با بازار تنظیم می‌شوند. هیچ هزینه پنهانی در کار نیست.</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-icon">⚡</div>
+        <div class="about-value-title">سرعت در ارسال</div>
+        <div class="about-value-desc">سفارش‌های تهران در ۲۴ ساعت و سایر شهرها در ۳ روز کاری تحویل داده می‌شوند.</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-icon">🔄</div>
+        <div class="about-value-title">بازگشت بدون دردسر</div>
+        <div class="about-value-desc">اگر به هر دلیلی راضی نبودید، ۷ روز مهلت دارید محصول را بدون قید و شرط برگردانید.</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-icon">📞</div>
+        <div class="about-value-title">پشتیبانی واقعی</div>
+        <div class="about-value-desc">پشتیبانی ما با انسان‌های واقعی جواب می‌دهد، نه ربات. شنبه تا پنجشنبه ۹ تا ۱۸.</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-icon">♻️</div>
+        <div class="about-value-title">مسئولیت محیط‌زیستی</div>
+        <div class="about-value-desc">محصولات انرژی‌کارا را اولویت‌بندی می‌کنیم و بسته‌بندی‌ها را بازیافت‌پذیر انتخاب می‌کنیم.</div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/js/ui.js"></script>
+</body>
+</html>

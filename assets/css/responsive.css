@@ -1,0 +1,13 @@
+/* ============================================================
+   HomeShop — responsive.css
+   این فایل باید در <head> هر صفحه، بعد از همه‌ی CSSهای دیگر لود شود.
+   ============================================================ */
+@media(max-width:880px){
+  .hero{grid-template-columns:1fr;}
+  .pd, .checkout-grid, .cart-layout{grid-template-columns:1fr;}
+  .dash-layout{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .feature-cards{grid-template-columns:1fr;}
+  .topbar-inner{flex-wrap:wrap;}
+  nav.mainnav{order:3; width:100%; justify-content:center;}
+}

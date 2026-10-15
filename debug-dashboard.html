@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debug Dashboard — خانه‌برق</title>
+<style>
+:root {
+  --bg:      #060810;
+  --surface: #0C0F1A;
+  --card:    #111520;
+  --border:  rgba(255,255,255,0.06);
+  --green:   #00FF87;
+  --red:     #FF4D6D;
+  --yellow:  #FFB830;
+  --blue:    #4D9AFF;
+  --cyan:    #00C8FF;
+  --purple:  #A78BFA;
+  --text:    #E0E2F0;
+  --muted:   #5A5F7A;
+  --font:    'Vazirmatn', 'Courier New', monospace;
+}
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap');
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top:0; z-index:50;
+}
+.topbar-brand { font-size:16px; font-weight:800; letter-spacing:-0.5px; }
+.topbar-brand span { color: var(--green); }
+.topbar-meta { font-size:12px; color:var(--muted); display:flex; gap:20px; }
+.topbar-btn {
+  padding:7px 16px; border-radius:6px; font-size:12px; font-weight:700;
+  border:1px solid var(--border); background:var(--card); color:var(--text);
+  cursor:pointer; transition:all 0.2s; display:flex; gap:8px; align-items:center;
+}
+.topbar-btn:hover { border-color:var(--blue); color:var(--blue); }
+.topbar-actions { display:flex; gap:8px; }
+
+/* ── LAYOUT ── */
+.layout { display:grid; grid-template-columns:220px 1fr; flex:1; overflow:hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  padding: 20px 0; overflow-y:auto;
+}
+.sidebar-section { padding:8px 16px 4px; font-size:10px; color:var(--muted); font-weight:700; letter-spacing:1px; margin-top:8px; }
+.sidebar-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 20px; font-size:13px; font-weight:600; color:var(--muted);
+  cursor:pointer; transition:all 0.15s; border-right:2px solid transparent;
+}
+.sidebar-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+.sidebar-item.active { color:var(--text); border-right-color:var(--blue); background:rgba(77,154,255,0.06); }
+.sidebar-item .icon { font-size:16px; }
+
+/* ── MAIN ── */
+.main { overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:20px; }
+
+/* ── PANEL ── */
+.panel {
+  display: none;
+  flex-direction:column; gap:16px;
+}
+.panel.active { display:flex; }
+.panel-title { font-size:20px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px; }
+.panel-sub { font-size:13px; color:var(--muted); }
+
+/* ── STAT CARDS ── */
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:16px; position:relative; overflow:hidden;
+}
+.stat-card::before {
+  content:''; position:absolute; top:0; right:0;
+  width:60px; height:60px; border-radius:50%;
+  background:var(--accent,#4D9AFF); opacity:0.06;
+  transform:translate(20px,-20px);
+}
+.stat-label { font-size:11px; color:var(--muted); font-weight:600; margin-bottom:8px; }
+.stat-value { font-size:28px; font-weight:800; letter-spacing:-1px; }
+.stat-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+/* ── TABLE ── */
+.table-wrap { background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.table-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.table-title { font-size:13px; font-weight:700; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+thead { background:rgba(255,255,255,0.03); }
+th { padding:10px 14px; text-align:right; font-weight:600; color:var(--muted); white-space:nowrap; }
+td { padding:10px 14px; border-top:1px solid var(--border); }
+tr:hover td { background:rgba(255,255,255,0.02); }
+
+/* ── LOG VIEWER ── */
+.log-controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.log-select, .log-input {
+  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  color:var(--text); padding:7px 12px; font-size:13px; font-family:var(--font);
+}
+.log-select:focus, .log-input:focus { outline:none; border-color:var(--blue); }
+.log-area {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:16px; font-family:'Courier New',monospace; font-size:11px;
+  line-height:1.7; max-height:500px; overflow-y:auto;
+  white-space:pre-wrap; word-break:break-all;
+}
+.log-entry { padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+.log-error  { color:var(--red); }
+.log-warn   { color:var(--yellow); }
+.log-info   { color:var(--green); }
+.log-http   { color:var(--cyan); }
+.log-debug  { color:var(--muted); }
+
+/* ── BADGES ── */
+.badge {
+  display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:700;
+}
+.badge-green  { background:rgba(0,255,135,0.12); color:var(--green); }
+.badge-red    { background:rgba(255,77,109,0.12); color:var(--red); }
+.badge-yellow { background:rgba(255,184,48,0.12); color:var(--yellow); }
+.badge-blue   { background:rgba(77,154,255,0.12); color:var(--blue); }
+.badge-purple { background:rgba(167,139,250,0.12); color:var(--purple); }
+
+/* ── PROGRESS ── */
+.progress-row { display:flex; align-items:center; gap:10px; margin:6px 0; }
+.progress-label { font-size:12px; color:var(--muted); width:80px; flex-shrink:0; }
+.progress-bar { flex:1; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:3px; background:var(--blue); transition:width 0.5s; }
+.progress-val { font-size:12px; font-weight:700; width:50px; text-align:left; }
+
+/* ── MISC ── */
+.refresh-tag { font-size:11px; color:var(--muted); }
+.empty { padding:40px; text-align:center; color:var(--muted); font-size:13px; }
+.error-card {
+  background:rgba(255,77,109,0.07); border:1px solid rgba(255,77,109,0.2);
+  border-radius:8px; padding:12px 16px; font-size:12px; font-family:'Courier New',monospace;
+}
+.error-card .err-msg { color:var(--red); font-weight:700; margin-bottom:6px; }
+.error-card .err-stack { color:var(--muted); white-space:pre-wrap; }
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">خانه‌برق <span>Debug</span></div>
+  <div class="topbar-meta">
+    <span id="ts">—</span>
+    <span id="uptime">—</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn" onclick="refreshAll()">⟳ رفرش</button>
+    <button class="topbar-btn" onclick="toggleAutoRefresh()">⏱ خودکار: <span id="autoLabel">خاموش</span></button>
+    <a href="admin.html" class="topbar-btn">← پنل ادمین</a>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">نظارت</div>
+    <div class="sidebar-item active" onclick="switchPanel('overview')"><span class="icon">📊</span> خلاصه</div>
+    <div class="sidebar-item" onclick="switchPanel('requests')"><span class="icon">🌐</span> درخواست‌ها</div>
+    <div class="sidebar-item" onclick="switchPanel('performance')"><span class="icon">⚡</span> کارایی</div>
+    <div class="sidebar-item" onclick="switchPanel('memory')"><span class="icon">🧠</span> حافظه</div>
+    <div class="sidebar-section">لاگ‌ها</div>
+    <div class="sidebar-item" onclick="switchPanel('logs')"><span class="icon">📋</span> مشاهده لاگ</div>
+    <div class="sidebar-item" onclick="switchPanel('errors')"><span class="icon">💥</span> خطاها</div>
+    <div class="sidebar-section">سیستم</div>
+    <div class="sidebar-item" onclick="switchPanel('health')"><span class="icon">❤️</span> Health Check</div>
+    <div class="sidebar-item" onclick="switchPanel('env')"><span class="icon">⚙️</span> متغیرها</div>
+    <div class="sidebar-item" onclick="switchPanel('tools')"><span class="icon">🔧</span> ابزارها</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+      <div>
+        <div class="panel-title">خلاصه سیستم</div>
+        <div class="panel-sub">نگاه کلی به وضعیت سرور</div>
+      </div>
+      <div class="stat-grid" id="overviewStats"></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">پرتکرارترین Endpoints</span>
+          <span class="refresh-tag" id="lastRefreshOv">—</span>
+        </div>
+        <table id="topEndpointsTable">
+          <thead><tr><th>Endpoint</th><th>تعداد</th></tr></thead>
+          <tbody><tr><td colspan="2" class="empty">در حال بارگذاری...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REQUESTS -->
+    <div class="panel" id="panel-requests">
+      <div>
+        <div class="panel-title">آمار درخواست‌ها</div>
+        <div class="panel-sub">وضعیت HTTP requests</div>
+      </div>
+      <div class="stat-grid" id="reqStats"></div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Endpoint های کند</span></div>
+        <table id="slowTable">
+          <thead><tr><th>Endpoint</th><th>تعداد تکرار</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE -->
+    <div class="panel" id="panel-performance">
+      <div>
+        <div class="panel-title">کارایی</div>
+        <div class="panel-sub">تأخیر و زمان پاسخ</div>
+      </div>
+      <div class="stat-grid" id="perfStats"></div>
+    </div>
+
+    <!-- MEMORY -->
+    <div class="panel" id="panel-memory">
+      <div>
+        <div class="panel-title">حافظه و CPU</div>
+      </div>
+      <div class="table-wrap" style="padding:20px;" id="memView"></div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="panel" id="panel-logs">
+      <div>
+        <div class="panel-title">مشاهده لاگ</div>
+      </div>
+      <div class="log-controls">
+        <select class="log-select" id="logFile">
+          <option value="combined">combined.log</option>
+          <option value="error">error.log</option>
+          <option value="http">http.log</option>
+        </select>
+        <select class="log-select" id="logLevel">
+          <option value="">همه سطوح</option>
+          <option value="error">error</option>
+          <option value="warn">warn</option>
+          <option value="info">info</option>
+          <option value="http">http</option>
+          <option value="debug">debug</option>
+        </select>
+        <input class="log-input" id="logSearch" placeholder="جستجو..." oninput="filterLogs()">
+        <button class="topbar-btn" onclick="loadLogs()">بارگذاری</button>
+        <button class="topbar-btn" style="color:var(--red)" onclick="clearLog()">🗑 پاک کردن</button>
+      </div>
+      <div class="log-area" id="logArea">در حال بارگذاری...</div>
+    </div>
+
+    <!-- ERRORS -->
+    <div class="panel" id="panel-errors">
+      <div>
+        <div class="panel-title">خطاها</div>
+      </div>
+      <div id="errorsView"></div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="panel" id="panel-health">
+      <div>
+        <div class="panel-title">Health Check</div>
+      </div>
+      <div class="stat-grid" id="healthStats"></div>
+    </div>
+
+    <!-- ENV -->
+    <div class="panel" id="panel-env">
+      <div>
+        <div class="panel-title">متغیرهای محیطی</div>
+        <div class="panel-sub">مقادیر حساس نمایش داده نمی‌شوند</div>
+      </div>
+      <div class="table-wrap" id="envView"></div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="panel" id="panel-tools">
+      <div>
+        <div class="panel-title">ابزارهای دیباگ</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card" style="--accent:var(--purple)">
+          <div class="stat-label">Garbage Collector</div>
+          <div class="stat-value" style="font-size:14px;margin:10px 0">آزادسازی حافظه دستی</div>
+          <button class="topbar-btn" style="margin-top:8px" onclick="runGC()">اجرای GC</button>
+          <div id="gcResult" style="font-size:11px;color:var(--muted);margin-top:8px"></div>
+        </div>
+        <div class="stat-card" style="--accent:var(--cyan)">
+          <div class="stat-label">Health Check</div>
+          <div class="stat-value" style="font-size:14px;margin:10px 0">وضعیت اتصال DB</div>
+          <button class="topbar-btn" style="margin-top:8px" onclick="switchPanel('health');loadHealth()">بررسی</button>
+        </div>
+        <div class="stat-card" style="--accent:var(--green)">
+          <div class="stat-label">پاک کردن لاگ‌ها</div>
+          <div class="stat-value" style="font-size:14px;margin:10px 0">حذف همه فایل‌های لاگ</div>
+          <button class="topbar-btn" style="margin-top:8px;color:var(--red)" onclick="clearAllLogs()">پاک کردن</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const DEBUG_API = ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '5500') ? 'http://localhost:4000/api/debug' : `${window.location.origin}/api/debug`;
+const SECRET = localStorage.getItem('debugSecret') || '';
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', 'x-debug-secret': SECRET };
+  const res = await fetch(DEBUG_API + path, { ...opts, headers });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+/* ── Panel switching ── */
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + name)?.classList.add('active');
+  event?.currentTarget?.classList.add('active');
+
+  const loaders = { overview: loadOverview, requests: loadRequests,
+    performance: loadPerf, memory: loadMem, logs: loadLogs,
+    errors: loadErrors, health: loadHealth, env: loadEnv };
+  loaders[name]?.();
+}
+
+/* ── Stat card helper ── */
+function statCard(label, value, sub = '', accent = '--blue') {
+  return `<div class="stat-card" style="--accent:var(${accent})">
+    <div class="stat-label">${label}</div>
+    <div class="stat-value">${value}</div>
+    ${sub ? `<div class="stat-sub">${sub}</div>` : ''}
+  </div>`;
+}
+
+/* ── TABLE ── */
+function tableRows(data, cols) {
+  if (!data.length) return `<tr><td colspan="${cols.length}" class="empty">داده‌ای موجود نیست</td></tr>`;
+  return data.map(row =>
+    `<tr>${cols.map(c => `<td>${row[c] ?? '—'}</td>`).join('')}</tr>`
+  ).join('');
+}
+
+/* ── OVERVIEW ── */
+async function loadOverview() {
+  try {
+    const d = await api('/stats');
+    document.getElementById('overviewStats').innerHTML = [
+      statCard('کل درخواست‌ها', d.requests.total.toLocaleString('fa'), '', '--blue'),
+      statCard('موفق', d.requests.success.toLocaleString('fa'), '', '--green'),
+      statCard('خطا کلاینت', d.requests.clientError.toLocaleString('fa'), '4xx', '--yellow'),
+      statCard('خطا سرور', d.requests.serverError.toLocaleString('fa'), '5xx', '--red'),
+      statCard('میانگین تأخیر', d.latency.avg + ' ms', 'rolling 1000', '--cyan'),
+      statCard('آپتایم', fmtUptime(d.uptime), '', '--purple'),
+    ].join('');
+
+    const tbody = document.querySelector('#topEndpointsTable tbody');
+    tbody.innerHTML = d.topEndpoints.length
+      ? d.topEndpoints.map(([ep, n]) => `<tr><td><code>${ep}</code></td><td><span class="badge badge-blue">${n}</span></td></tr>`).join('')
+      : `<tr><td colspan="2" class="empty">هنوز درخواستی ثبت نشده</td></tr>`;
+
+    document.getElementById('lastRefreshOv').textContent = 'آخرین به‌روزرسانی: ' + new Date().toLocaleTimeString('fa');
+    document.getElementById('uptime').textContent = 'آپتایم: ' + fmtUptime(d.uptime);
+    document.getElementById('ts').textContent = new Date().toLocaleTimeString('fa');
+  } catch(e) { console.error(e); }
+}
+
+/* ── REQUESTS ── */
+async function loadRequests() {
+  try {
+    const d = await api('/stats');
+    const total = d.requests.total || 1;
+    document.getElementById('reqStats').innerHTML = [
+      statCard('کل', d.requests.total.toLocaleString('fa'), '', '--blue'),
+      statCard('موفق', d.requests.success.toLocaleString('fa'), (d.requests.success/total*100).toFixed(1) + '%', '--green'),
+      statCard('4xx', d.requests.clientError.toLocaleString('fa'), '', '--yellow'),
+      statCard('5xx', d.requests.serverError.toLocaleString('fa'), '', '--red'),
+    ].join('');
+
+    const tbody = document.querySelector('#slowTable tbody');
+    tbody.innerHTML = d.slowEndpoints.length
+      ? d.slowEndpoints.map(([ep, n]) => `<tr><td><code>${ep}</code></td><td><span class="badge badge-red">${n} بار</span></td></tr>`).join('')
+      : `<tr><td colspan="2" class="empty">هیچ endpoint کندی ثبت نشده</td></tr>`;
+  } catch(e) {}
+}
+
+/* ── PERFORMANCE ── */
+async function loadPerf() {
+  try {
+    const d = await api('/stats');
+    document.getElementById('perfStats').innerHTML = [
+      statCard('میانگین تأخیر', d.latency.avg + ' ms', '', '--blue'),
+      statCard('P95', d.latency.p95 + ' ms', '95th percentile', '--yellow'),
+      statCard('حداکثر تأخیر', d.latency.max + ' ms', '', '--red'),
+      statCard('نمونه‌ها', d.latency.samples.toLocaleString('fa'), 'rolling window', '--muted'),
+    ].join('');
+  } catch(e) {}
+}
+
+/* ── MEMORY ── */
+async function loadMem() {
+  try {
+    const d = await api('/stats');
+    const m = d.memory; const c = d.cpu;
+    const pct = v => Math.min(100, (v / m.heapTotal * 100)).toFixed(1);
+    document.getElementById('memView').innerHTML = `
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:14px">حافظه (MB)</div>
+        ${progressRow('Heap Used', m.heapUsed, m.heapTotal, 'var(--blue)')}
+        ${progressRow('Heap Total', m.heapTotal, m.heapTotal, 'var(--green)')}
+        ${progressRow('RSS', m.rss, m.heapTotal, 'var(--purple)')}
+        ${progressRow('Peak', m.peak, m.heapTotal, 'var(--red)')}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:14px">CPU</div>
+        <div style="font-size:13px;color:var(--muted)">هسته‌ها: <b style="color:var(--text)">${c.cores}</b></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px">Load average: <b style="color:var(--text)">${c.load.join(' / ')}</b></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px">PID: <b style="color:var(--text)">${d.node.pid}</b></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px">Node.js: <b style="color:var(--text)">${d.node.version}</b></div>
+      </div>`;
+  } catch(e) {}
+}
+
+function progressRow(label, val, total, color) {
+  const pct = Math.min(100, (val / (total || 1)) * 100).toFixed(1);
+  return `<div class="progress-row">
+    <span class="progress-label">${label}</span>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+    <span class="progress-val">${val} MB</span>
+  </div>`;
+}
+
+/* ── LOGS ── */
+let _allLogs = [];
+async function loadLogs() {
+  const file  = document.getElementById('logFile').value;
+  const level = document.getElementById('logLevel').value;
+  document.getElementById('logArea').textContent = 'در حال بارگذاری...';
+  try {
+    const d = await api(`/logs?file=${file}&limit=200${level ? '&level='+level : ''}`);
+    _allLogs = d.entries;
+    renderLogs(_allLogs);
+  } catch(e) { document.getElementById('logArea').textContent = 'خطا: ' + e.message; }
+}
+
+function renderLogs(entries) {
+  if (!entries.length) { document.getElementById('logArea').innerHTML = '<span style="color:var(--muted)">لاگی یافت نشد</span>'; return; }
+  document.getElementById('logArea').innerHTML = entries.map(e => {
+    const cls = 'log-' + (e.level || 'debug');
+    const meta = {...e}; delete meta.timestamp; delete meta.level; delete meta.message;
+    const metaStr = Object.keys(meta).length ? ' ' + JSON.stringify(meta) : '';
+    return `<div class="log-entry ${cls}">[${e.timestamp?.slice(11,19)||''}] [${(e.level||'').toUpperCase()}] ${e.message || e.raw || ''}${metaStr}</div>`;
+  }).join('');
+}
+
+function filterLogs() {
+  const q = document.getElementById('logSearch').value.toLowerCase();
+  if (!q) { renderLogs(_allLogs); return; }
+  renderLogs(_allLogs.filter(e => JSON.stringify(e).toLowerCase().includes(q)));
+}
+
+async function clearLog() {
+  if (!confirm('پاک کردن فایل لاگ؟')) return;
+  const file = document.getElementById('logFile').value;
+  await api('/logs?file=' + file, { method: 'DELETE' });
+  loadLogs();
+}
+
+async function clearAllLogs() {
+  if (!confirm('پاک کردن همه فایل‌های لاگ؟')) return;
+  await Promise.all(['combined','error','http'].map(f => api('/logs?file='+f, { method: 'DELETE' })));
+  alert('پاک شد!');
+}
+
+/* ── ERRORS ── */
+async function loadErrors() {
+  try {
+    const d = await api('/errors');
+    const view = document.getElementById('errorsView');
+    if (!d.recentErrors.length) {
+      view.innerHTML = '<div class="empty">هیچ خطایی ثبت نشده 🎉</div>'; return;
+    }
+    view.innerHTML = d.recentErrors.map(e => `
+      <div class="error-card" style="margin-bottom:10px">
+        <div class="err-msg">[${e.timestamp?.slice(0,19)}] ${e.method} ${e.path} — ${e.statusCode}</div>
+        <div>${e.message}</div>
+        ${e.stack ? `<div class="err-stack" style="margin-top:6px;font-size:10px">${e.stack}</div>` : ''}
+      </div>`).join('');
+  } catch(e) {}
+}
+
+/* ── HEALTH ── */
+async function loadHealth() {
+  try {
+    const d = await api('/health');
+    document.getElementById('healthStats').innerHTML = [
+      statCard('وضعیت سرور', `<span class="badge badge-green">${d.status}</span>`, '', '--green'),
+      statCard('دیتابیس', `<span class="badge badge-${d.database.status==='connected'?'green':'red'}">${d.database.status}</span>`, d.database.latencyMs ? d.database.latencyMs + ' ms' : '', '--blue'),
+      statCard('محیط', d.env, '', '--purple'),
+      statCard('Node.js', d.node, '', '--cyan'),
+      statCard('آپتایم', fmtUptime(d.uptime), '', '--yellow'),
+      statCard('Heap Used', d.memory.heapUsed, '', '--red'),
+    ].join('');
+  } catch(e) {}
+}
+
+/* ── ENV ── */
+async function loadEnv() {
+  try {
+    const d = await api('/env');
+    const rows1 = Object.entries(d.env).map(([k,v]) =>
+      `<tr><td><code>${k}</code></td><td>${v}</td></tr>`).join('');
+    const rows2 = Object.entries(d.sensitiveKeys).map(([k,v]) =>
+      `<tr><td><code>${k}</code></td><td>${v}</td></tr>`).join('');
+    document.getElementById('envView').innerHTML = `
+      <table><thead><tr><th>متغیر</th><th>مقدار</th></tr></thead><tbody>${rows1}</tbody></table>
+      <div style="padding:14px 16px;border-top:1px solid var(--border);font-size:13px;font-weight:700">کلیدهای حساس</div>
+      <table><tbody>${rows2}</tbody></table>`;
+  } catch(e) {}
+}
+
+/* ── GC ── */
+async function runGC() {
+  try {
+    const d = await api('/gc', { method: 'POST' });
+    document.getElementById('gcResult').textContent = d.success
+      ? `آزاد شد: ${d.freedMB} MB`
+      : d.note;
+  } catch(e) {}
+}
+
+/* ── UTILS ── */
+function fmtUptime(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return `${h}h ${m}m ${sec}s`;
+}
+
+/* ── AUTO REFRESH ── */
+let autoInterval = null;
+function toggleAutoRefresh() {
+  if (autoInterval) {
+    clearInterval(autoInterval); autoInterval = null;
+    document.getElementById('autoLabel').textContent = 'خاموش';
+  } else {
+    autoInterval = setInterval(refreshAll, 5000);
+    document.getElementById('autoLabel').textContent = 'روشن (5s)';
+  }
+}
+
+function refreshAll() {
+  const active = document.querySelector('.panel.active')?.id?.replace('panel-','');
+  const loaders = { overview: loadOverview, requests: loadRequests,
+    performance: loadPerf, memory: loadMem, logs: loadLogs,
+    errors: loadErrors, health: loadHealth, env: loadEnv };
+  loaders[active]?.();
+}
+
+/* ── INIT ── */
+loadOverview();
+document.getElementById('ts').textContent = new Date().toLocaleTimeString('fa');
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+/* ============================================================
+   HomeShop — about.css
+   ============================================================ */
+.about-body{max-width:680px; font-size:15.5px; color:var(--muted); line-height:1.9;}
+.about-body strong{color:var(--ink);}

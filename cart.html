@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سبد خرید | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="cart">
+
+<main>
+  <div class="ds-page-hero">
+    <span class="ds-page-hero-tag">خرید شما</span>
+    <h1>سبد خرید</h1>
+  </div>
+
+  <div class="ds-section">
+    <!-- خالی -->
+    <div id="cartEmpty" class="ds-text-center" style="display:none;padding:80px 0">
+      <div style="font-size:64px;margin-bottom:20px">🛒</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:12px">سبد خرید خالی است</div>
+      <p style="color:var(--muted);margin-bottom:28px">محصولی به سبد خرید اضافه نکرده‌اید</p>
+      <a href="index.html" class="ds-btn ds-btn-primary ds-btn-lg">مشاهده فروشگاه</a>
+    </div>
+
+    <!-- پر -->
+    <div id="cartFull" class="ds-cart-layout">
+      <div class="ds-card">
+        <div class="ds-card-body" id="cartItems"></div>
+      </div>
+      <div class="ds-cart-summary">
+        <div class="ds-cart-summary-title">خلاصه سفارش</div>
+        <div class="ds-cart-summary-row">
+          <span>جمع محصولات</span><span id="subtotal">۰ تومان</span>
+        </div>
+        <div class="ds-cart-summary-row">
+          <span>هزینه ارسال</span><span style="color:var(--green)">رایگان</span>
+        </div>
+        <div class="ds-divider"></div>
+        <div class="ds-cart-summary-row">
+          <span style="font-weight:800">مجموع</span>
+          <span class="ds-cart-total" id="total">۰ تومان</span>
+        </div>
+        <div class="ds-mt-24">
+          <a href="checkout.html" class="ds-btn ds-btn-cyan ds-btn-full ds-btn-lg">ادامه خرید</a>
+        </div>
+        <div class="ds-mt-12">
+          <a href="index.html" class="ds-btn ds-btn-ghost ds-btn-full">ادامه گردش</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/cart.js"></script>
+</body>
+</html>

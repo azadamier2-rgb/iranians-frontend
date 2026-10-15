@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محصول | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+<style>
+.product-layout { display:grid; grid-template-columns:1fr 1fr; gap:48px; padding:48px 64px; position:relative; z-index:2; }
+.product-gallery { position:sticky; top:calc(var(--nav-h) + 20px); }
+.product-main-img { aspect-ratio:1; border-radius:var(--r-xl); overflow:hidden; background:var(--card); border:1px solid var(--border); }
+.product-main-img img { width:100%; height:100%; object-fit:cover; }
+.product-thumbs { display:flex; gap:10px; margin-top:12px; }
+.product-thumb { width:72px; height:72px; border-radius:var(--r-md); overflow:hidden; border:2px solid var(--border); cursor:pointer; transition:border-color 0.2s; }
+.product-thumb:hover,.product-thumb.active { border-color:var(--orange); }
+.product-thumb img { width:100%; height:100%; object-fit:cover; }
+.product-name { font-size:clamp(22px,3vw,32px); font-weight:900; letter-spacing:-0.5px; margin-bottom:12px; }
+.product-brand-tag { display:inline-flex; align-items:center; gap:8px; margin-bottom:20px; font-size:13px; color:var(--muted); font-weight:600; }
+.product-price-block { padding:20px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:20px 0; }
+.product-price-current { font-size:32px; font-weight:900; color:var(--amber); }
+.product-price-old { font-size:16px; color:var(--muted); text-decoration:line-through; margin-top:4px; }
+.product-discount { display:inline-block; padding:4px 12px; border-radius:var(--r-pill); background:rgba(255,77,109,0.12); color:var(--red); font-size:13px; font-weight:700; margin-top:8px; }
+.product-actions { display:flex; gap:12px; margin-top:24px; }
+.product-actions .ds-btn { flex:1; }
+.product-specs { margin-top:32px; }
+.product-specs h3 { font-size:16px; font-weight:800; margin-bottom:16px; }
+.spec-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.spec-row:last-child { border:none; }
+.spec-key { color:var(--muted); }
+.spec-val { font-weight:600; }
+.product-tabs { display:flex; gap:4px; margin-bottom:20px; }
+.product-tab { padding:10px 20px; border-radius:var(--r-md); font-size:13px; font-weight:700; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+.product-tab.active { background:var(--orange-dim); color:var(--orange-2); }
+.product-tab-content { display:none; }
+.product-tab-content.active { display:block; }
+@media(max-width:900px) {
+  .product-layout { grid-template-columns:1fr; padding:20px; }
+  .product-gallery { position:static; }
+  .product-actions { flex-direction:column; }
+}
+</style>
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="products">
+<main>
+  <div class="product-layout">
+
+    <!-- گالری -->
+    <div class="product-gallery">
+      <div class="product-main-img">
+        <img id="mainImg" src="assets/images/product-1.jpg" alt="تصویر محصول"
+          onerror="this.parentElement.style.background='var(--surface)';this.style.display='none'">
+      </div>
+      <div class="product-thumbs" id="thumbsRow"></div>
+    </div>
+
+    <!-- اطلاعات -->
+    <div>
+      <div class="product-brand-tag" id="productBrand">
+        <span class="ds-badge ds-badge-indigo" id="productCategory">لوازم خانگی</span>
+      </div>
+
+      <h1 class="product-name" id="productName">در حال بارگذاری...</h1>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <div id="productRating" style="color:var(--yellow);font-size:14px">★★★★★</div>
+        <span id="productReviewCount" style="font-size:13px;color:var(--muted)"></span>
+        <span class="ds-badge ds-badge-green" id="stockBadge">موجود</span>
+      </div>
+
+      <div class="product-price-block">
+        <div class="product-price-current" id="productPrice">—</div>
+        <div class="product-price-old" id="productOldPrice"></div>
+        <div class="product-discount" id="productDiscount" style="display:none"></div>
+      </div>
+
+      <div id="productDesc" style="font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:16px"></div>
+
+      <!-- تعداد -->
+      <div class="ds-flex ds-gap-12 ds-items-center" style="margin-bottom:20px">
+        <span style="font-size:13px;font-weight:700">تعداد:</span>
+        <div class="ds-flex ds-gap-8 ds-items-center">
+          <button class="ds-btn ds-btn-ghost ds-btn-sm" id="qtyMinus">−</button>
+          <span id="qtyVal" style="font-size:16px;font-weight:800;min-width:28px;text-align:center">۱</span>
+          <button class="ds-btn ds-btn-ghost ds-btn-sm" id="qtyPlus">+</button>
+        </div>
+      </div>
+
+      <div id="restockBox" class="ds-card" style="display:none;padding:16px;margin:18px 0;background:var(--pistachio-soft,#eff8df)"><b>🔔 وقتی موجود شد خبرم کن</b><p style="font-size:12px;color:var(--muted);margin:7px 0 10px">ایمیل خود را وارد کنید تا هنگام موجود شدن محصول اطلاع بگیرید.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="restockEmail" class="ds-input" type="email" placeholder="ایمیل شما" style="flex:1;min-width:220px"><button id="restockBtn" class="ds-btn ds-btn-primary" type="button">ثبت اعلان</button></div><div id="restockMsg" style="font-size:12px;margin-top:8px"></div></div>
+
+      <div class="product-actions">
+        <button class="ds-btn ds-btn-primary ds-btn-lg" id="addToCart">افزودن به سبد</button>
+        <button class="ds-btn ds-btn-ghost ds-btn-lg" id="buyNow">خرید سریع</button>
+        <button class="ds-btn ds-btn-ghost ds-btn-lg" id="wishlistBtn" type="button">♡ علاقه‌مندی</button>
+        <button class="ds-btn ds-btn-ghost ds-btn-lg" id="compareBtn" type="button">⚖ مقایسه</button>
+      </div>
+
+      <!-- ویژگی‌های سریع -->
+      <div class="ds-flex ds-gap-16" style="margin-top:24px;flex-wrap:wrap">
+        <div class="ds-flex ds-gap-8 ds-items-center" style="font-size:12px;color:var(--muted)">
+          <span>🚚</span> ارسال سریع
+        </div>
+        <div class="ds-flex ds-gap-8 ds-items-center" style="font-size:12px;color:var(--muted)">
+          <span>🛡️</span> گارانتی اصل
+        </div>
+        <div class="ds-flex ds-gap-8 ds-items-center" style="font-size:12px;color:var(--muted)">
+          <span>🔄</span> ۷ روز مرجوعی
+        </div>
+      </div>
+
+      <!-- تب‌ها -->
+      <div class="product-specs">
+        <div class="product-tabs">
+          <div class="product-tab active" data-tab="specs">مشخصات</div>
+          <div class="product-tab" data-tab="desc">توضیحات</div>
+          <div class="product-tab" data-tab="reviews">نظرات</div>
+        </div>
+
+        <div class="product-tab-content active" id="tab-specs">
+          <div id="specsList"></div>
+        </div>
+        <div class="product-tab-content" id="tab-desc">
+          <p id="fullDesc" style="font-size:14px;color:var(--muted);line-height:2"></p>
+        </div>
+        <div class="product-tab-content" id="tab-reviews">
+          <div id="reviewsList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<section class="ds-card" style="margin-top:24px;padding:18px"><h2>محصولات مرتبط</h2><div id="relatedProducts" class="ds-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px"></div></section>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/product.js"></script>
+<script>
+// Tab switching
+document.querySelectorAll('.product-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.product-tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// قابلیت‌های فروشگاهی
+const WISH_KEY='homeshop_wishlist_local_v1'; const COMP_KEY='homeshop_compare_v1';
+function localIds(key){try{const x=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(x)?x.filter(v=>typeof v==='string'):[]}catch{return[]}}
+function saveIds(key,x){try{localStorage.setItem(key,JSON.stringify(x.slice(0,4)))}catch{}}
+document.getElementById('wishlistBtn')?.addEventListener('click',async()=>{const id=new URLSearchParams(location.search).get('id');let ids=localIds(WISH_KEY);if(ids.includes(id)){ids=ids.filter(x=>x!==id);document.getElementById('wishlistBtn').textContent='♡ علاقه‌مندی';}else{ids.push(id);document.getElementById('wishlistBtn').textContent='♥ در علاقه‌مندی';}saveIds(WISH_KEY,ids);try{if(getCurrentUser()) ids.includes(id)?await WishlistAPI.add(id):await WishlistAPI.remove(id);}catch(e){/* guest/local fallback */}});
+document.getElementById('compareBtn')?.addEventListener('click',()=>{const id=new URLSearchParams(location.search).get('id');const ids=localIds(COMP_KEY);if(!ids.includes(id)){if(ids.length>=4){alert('حداکثر ۴ محصول را می‌توانید مقایسه کنید.');return;}ids.push(id);saveIds(COMP_KEY,ids);}location.href='compare.html';});
+</script>
+</body>
+</html>

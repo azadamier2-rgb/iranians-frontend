@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تماس با ما | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="contact">
+<main>
+  <div class="ds-page-hero">
+    <span class="ds-page-hero-tag">ارتباط با ما</span>
+    <h1>تماس با خانه‌برق</h1>
+    <p>تیم پشتیبانی ما آماده پاسخگویی است</p>
+  </div>
+
+  <div class="ds-section">
+    <div class="ds-contact-layout">
+      <div>
+        <div class="ds-card">
+          <div class="ds-card-body">
+            <h2 style="font-size:20px;font-weight:800;margin-bottom:24px">ارسال پیام</h2>
+            <div class="ds-alert" id="contactErr"></div>
+            <div class="ds-alert" id="contactOk"></div>
+            <div class="ds-form-field">
+              <label>نام</label>
+              <input type="text" id="cName" class="ds-input" placeholder="نام شما" required>
+            </div>
+            <div class="ds-form-field">
+              <label>ایمیل</label>
+              <input type="email" id="cEmail" class="ds-input" placeholder="example@email.com" required>
+            </div>
+            <div class="ds-form-field">
+              <label>موضوع</label>
+              <input type="text" id="cSubject" class="ds-input" placeholder="موضوع پیام">
+            </div>
+            <div class="ds-form-field">
+              <label>پیام</label>
+              <textarea id="cMessage" class="ds-textarea" placeholder="پیام خود را بنویسید..." required></textarea>
+            </div>
+            <button class="ds-btn ds-btn-primary ds-btn-full" id="contactBtn">ارسال پیام</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-contact-info-item">
+          <div class="ds-contact-icon">📞</div>
+          <div>
+            <div class="ds-contact-label">تلفن پشتیبانی</div>
+            <div class="ds-contact-value">۰۲۱-۰۰۰۰-۰۰۰۰</div>
+          </div>
+        </div>
+        <div class="ds-contact-info-item">
+          <div class="ds-contact-icon">📧</div>
+          <div>
+            <div class="ds-contact-label">ایمیل</div>
+            <div class="ds-contact-value">info@khanebargh.ir</div>
+          </div>
+        </div>
+        <div class="ds-contact-info-item">
+          <div class="ds-contact-icon">⏰</div>
+          <div>
+            <div class="ds-contact-label">ساعات کاری</div>
+            <div class="ds-contact-value">شنبه تا پنجشنبه ۹ تا ۱۸</div>
+          </div>
+        </div>
+        <div class="ds-contact-info-item">
+          <div class="ds-contact-icon">📍</div>
+          <div>
+            <div class="ds-contact-label">آدرس</div>
+            <div class="ds-contact-value">تهران، خیابان ولیعصر</div>
+          </div>
+        </div>
+
+        <div class="ds-card ds-mt-24">
+          <div class="ds-card-body">
+            <div style="font-size:14px;font-weight:700;margin-bottom:12px">پاسخگویی سریع</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.8">
+              معمولاً در کمتر از ۲ ساعت پاسخ می‌دهیم. برای اطلاعات فوری، لطفاً با شماره تلفن تماس بگیرید.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div style="text-align:center;margin:25px 0"><a class="ds-btn ds-btn-primary" href="support.html">🎧 ورود به پشتیبانی و ثبت تیکت</a></div>
+</main>
+<script src="assets/js/ui.js"></script>
+<script>
+document.getElementById('contactBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('contactBtn');
+  const name = document.getElementById('cName').value;
+  const email = document.getElementById('cEmail').value;
+  const subject = document.getElementById('cSubject').value;
+  const message = document.getElementById('cMessage').value;
+
+  if (!name || !email || !message) {
+    DS.showAlert(document.getElementById('contactErr'), 'error', 'لطفاً فیلدهای ضروری را پر کنید');
+    return;
+  }
+
+  DS.setLoading(btn, true);
+  try {
+    await DS.apiFetch('/contact', { method:'POST', body: JSON.stringify({ name, email, subject, message }) });
+    DS.showAlert(document.getElementById('contactOk'), 'success', 'پیام شما با موفقیت ارسال شد!');
+    DS.hideAlert(document.getElementById('contactErr'));
+  } catch(e) {
+    DS.showAlert(document.getElementById('contactErr'), 'error', e.message);
+  } finally {
+    DS.setLoading(btn, false);
+  }
+});
+</script>
+</body>
+</html>

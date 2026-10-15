@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تکمیل خرید | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="checkout">
+
+<main>
+  <div class="ds-page-hero">
+    <span class="ds-page-hero-tag">مرحله آخر</span>
+    <h1>تکمیل سفارش</h1>
+  </div>
+
+  <div class="ds-section">
+    <div class="ds-checkout-layout">
+      <div>
+        <div class="ds-checkout-step">
+          <div class="ds-checkout-step-title">اطلاعات تحویل</div>
+          <div class="ds-alert" id="checkoutErr"></div>
+          <div class="ds-form-field">
+            <label>نام و نام خانوادگی</label>
+            <input type="text" id="recipientName" class="ds-input" placeholder="نام گیرنده سفارش" required>
+          </div>
+          <div class="ds-form-field">
+            <label>شماره موبایل</label>
+            <input type="tel" id="phone" class="ds-input" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required>
+          </div>
+          <div class="ds-form-field">
+            <label>آدرس کامل</label>
+            <textarea id="address" class="ds-textarea" placeholder="استان، شهر، خیابان، کوچه، پلاک" required></textarea>
+          </div>
+          <div class="ds-form-field">
+            <label>کد پستی</label>
+            <input type="text" id="postalCode" required inputmode="numeric" maxlength="10" class="ds-input" placeholder="۱۲۳۴۵۶۷۸۹۰" maxlength="10">
+          </div>
+          <div class="ds-form-field">
+            <label>کوپن تخفیف (اختیاری)</label>
+            <div class="ds-flex ds-gap-8">
+              <input type="text" id="coupon" class="ds-input" placeholder="کد تخفیف">
+              <button class="ds-btn ds-btn-ghost" id="applyCoupon">اعمال</button>
+            </div>
+            <span class="ds-form-hint" id="couponMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ds-cart-summary">
+          <div class="ds-cart-summary-title">خلاصه سفارش</div>
+          <div id="checkoutItems"></div>
+          <div class="ds-divider"></div>
+          <div class="ds-cart-summary-row"><span>هزینه ارسال</span><span id="shippingCost">—</span></div>
+          <div class="ds-cart-summary-row">
+            <span>مجموع</span><span id="checkoutTotal" class="ds-cart-total">—</span>
+          </div>
+          <div class="ds-cart-summary-row" id="discountRow" style="display:none">
+            <span style="color:var(--green)">تخفیف</span>
+            <span id="discountAmount" style="color:var(--green)">—</span>
+          </div>
+          <div class="ds-mt-24">
+            <button class="ds-btn ds-btn-primary ds-btn-full ds-btn-lg" id="payBtn">پرداخت آنلاین</button>
+          </div>
+          <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px">
+            پرداخت از طریق درگاه امن زرین‌پال
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/checkout.js"></script>
+</body>
+</html>

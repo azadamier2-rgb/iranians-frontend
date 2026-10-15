@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رهگیری سفارش | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="track">
+<main>
+  <div class="ds-page-hero">
+    <span class="ds-page-hero-tag">وضعیت ارسال</span>
+    <h1>رهگیری سفارش</h1>
+    <p>کد رهگیری خود را وارد کنید تا وضعیت مرسوله را ببینید</p>
+  </div>
+
+  <div class="ds-section" style="max-width:680px;margin:0 auto">
+
+    <!-- فرم جستجو -->
+    <div class="ds-card" style="margin-bottom:24px">
+      <div class="ds-card-body">
+        <div class="ds-flex ds-gap-12">
+          <input type="text" id="trackInput" class="ds-input" placeholder="کد رهگیری — مثال: TRK1A2B3C4D5E" style="flex:1">
+          <button class="ds-btn ds-btn-primary" id="trackBtn">جستجو</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px">کد رهگیری پس از ارسال سفارش از طریق پیامک و ایمیل ارسال می‌شود</p>
+      </div>
+    </div>
+
+    <div class="ds-alert" id="trackErr"></div>
+    <div id="trackResult" style="display:none">
+
+      <!-- وضعیت -->
+      <div class="ds-card" style="margin-bottom:16px">
+        <div class="ds-card-body">
+
+          <div class="ds-tracking-card">
+            <!-- کد رهگیری -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <div>
+                <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px">کد رهگیری</div>
+                <div id="resultCode" style="font-family:'Courier New',monospace;font-size:16px;font-weight:700;background:var(--surface);padding:8px 14px;border-radius:var(--r-md);display:inline-block;border:1px solid var(--border)">—</div>
+              </div>
+              <button class="ds-btn ds-btn-ghost ds-btn-sm" id="copyBtn">📋 کپی</button>
+            </div>
+
+            <!-- وضعیت -->
+            <div class="ds-tracking-status">
+              <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:10px">وضعیت فعلی</div>
+              <span class="ds-status-pill" id="statusPill">—</span>
+            </div>
+
+            <!-- آخرین بروزرسانی -->
+            <div style="display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);font-size:13px">
+              <span style="color:var(--muted)">آخرین بروزرسانی</span>
+              <span id="lastUpdate" style="font-weight:600">—</span>
+            </div>
+
+            <!-- اطلاعات پیک -->
+            <div id="courierBlock" style="display:none;padding:14px 0;border-bottom:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px">اطلاعات پیک</div>
+              <div class="ds-flex ds-gap-16">
+                <span id="courierName" style="font-size:13px;font-weight:700"></span>
+                <a id="courierPhone" href="#" style="font-size:13px;color:var(--amber)"></a>
+              </div>
+            </div>
+
+            <!-- لینک پست -->
+            <div style="text-align:center;margin-top:20px">
+              <a id="postLink" href="#" target="_blank" class="ds-btn ds-btn-primary">
+                🔗 رهگیری در سایت پست پیشتاز
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- تاریخچه -->
+      <div class="ds-card" id="logsCard" style="display:none">
+        <div class="ds-card-body">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:16px">📋 تاریخچه وضعیت</h3>
+          <div class="ds-timeline" id="logsList"></div>
+        </div>
+      </div>
+
+      <!-- اطلاع‌رسانی -->
+      <div class="ds-card ds-mt-16" id="alertCard" style="display:none">
+        <div class="ds-card-body">
+          <h3 style="font-size:15px;font-weight:800;margin-bottom:6px">🔔 اطلاع‌رسانی تغییر وضعیت</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">هر بار که وضعیت مرسوله تغییر کرد، به شما خبر می‌دهیم</p>
+          <div class="ds-form-field">
+            <label>روش اطلاع‌رسانی</label>
+            <select id="alertType" class="ds-select">
+              <option value="both">ایمیل و پیامک</option>
+              <option value="email">فقط ایمیل</option>
+              <option value="sms">فقط پیامک</option>
+            </select>
+          </div>
+          <button class="ds-btn ds-btn-ghost" id="alertBtn">🔔 فعال کردن اطلاع‌رسانی</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/ui.js"></script>
+<script>
+const SHIPMENT_API = DS.API + '/shipments';
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+async function doTrack() {
+  const code = document.getElementById('trackInput').value.trim();
+  if (!code) return;
+  DS.setLoading(document.getElementById('trackBtn'), true);
+  DS.hideAlert(document.getElementById('trackErr'));
+
+  try {
+    const d = await fetch(`${SHIPMENT_API}/track?code=${encodeURIComponent(code)}`).then(r => r.json());
+    if (!d.shipment) throw new Error(d.error || 'کد رهگیری یافت نشد');
+    renderResult(d);
+  } catch(e) {
+    DS.showAlert(document.getElementById('trackErr'), 'error', e.message);
+    document.getElementById('trackResult').style.display = 'none';
+  } finally {
+    DS.setLoading(document.getElementById('trackBtn'), false);
+  }
+}
+
+function renderResult({ shipment, statusLabel, trackingUrl, canShowDelivered }) {
+  document.getElementById('trackResult').style.display = 'block';
+
+  document.getElementById('resultCode').textContent = shipment.tracking_code;
+  document.getElementById('postLink').href = trackingUrl;
+
+  // وضعیت
+  const pill = document.getElementById('statusPill');
+  const displayLabel = (shipment.status === 'delivered' && !canShowDelivered)
+    ? 'در مسیر مقصد' : statusLabel;
+  pill.textContent = displayLabel;
+  pill.className = `ds-status-pill ds-status-${
+    shipment.status === 'delivered' && !canShowDelivered ? 'in_transit' : shipment.status
+  }`;
+
+  // آخرین بروزرسانی
+  const dt = shipment.last_update_at || shipment.updatedAt;
+  document.getElementById('lastUpdate').textContent = dt
+    ? new Date(dt).toLocaleString('fa-IR') : '—';
+
+  // پیک
+  if (shipment.courier_name) {
+    document.getElementById('courierBlock').style.display = 'block';
+    document.getElementById('courierName').textContent = shipment.courier_name;
+    if (shipment.courier_phone) {
+      const el = document.getElementById('courierPhone');
+      el.textContent = shipment.courier_phone;
+      el.href = 'tel:' + shipment.courier_phone;
+    }
+  }
+
+  // لاگ‌ها
+  if (shipment.statusLogs?.length) {
+    document.getElementById('logsCard').style.display = 'block';
+    document.getElementById('logsList').innerHTML = shipment.statusLogs.map(l => `
+      <div class="ds-timeline-item">
+        <div class="ds-timeline-dot"></div>
+        <div class="ds-timeline-body">
+          <h4>${l.previous_status || 'شروع'} ← ${l.new_status}</h4>
+          ${l.message ? `<p style="font-size:12px;color:var(--muted);margin-top:2px">${escapeHTML(l.message)}</p>` : ''}
+          <time>${new Date(l.created_at || l.createdAt).toLocaleString('fa-IR')}</time>
+        </div>
+      </div>`).join('');
+  }
+
+  // اطلاع‌رسانی (فقط برای کاربران لاگین) — auth cookie در HttpOnly است.
+  if (typeof getCurrentUser === 'function' && getCurrentUser() && shipment.status !== 'delivered') {
+    document.getElementById('alertCard').style.display = 'block';
+  }
+}
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const code = document.getElementById('resultCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ کپی شد';
+    setTimeout(() => btn.textContent = '📋 کپی', 1500);
+  });
+});
+
+document.getElementById('trackBtn').addEventListener('click', doTrack);
+document.getElementById('trackInput').addEventListener('keypress', e => { if (e.key === 'Enter') doTrack(); });
+
+document.getElementById('alertBtn')?.addEventListener('click', async () => {
+  const shipId = document.getElementById('resultCode').dataset.id;
+  const type   = document.getElementById('alertType').value;
+  try {
+    await DS.apiFetch(`/shipments/${shipId}/alerts`, { method:'POST', body: JSON.stringify({ notification_type: type }) });
+    DS.showAlert(document.getElementById('trackErr'), 'success', 'اطلاع‌رسانی فعال شد ✓');
+  } catch(e) {
+    DS.showAlert(document.getElementById('trackErr'), 'error', e.message);
+  }
+});
+
+// اگر code در URL آمده باشد
+const urlCode = new URLSearchParams(location.search).get('code');
+if (urlCode) { document.getElementById('trackInput').value = urlCode; doTrack(); }
+</script>
+</body>
+</html>

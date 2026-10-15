@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پرداخت ناموفق | خانه‌برق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ds.css">
+  <link rel="stylesheet" href="assets/css/colorful-theme.css">
+</head>
+<body data-page="payment">
+<main>
+  <div class="ds-result-wrap">
+    <div class="ds-result-box" style="border-color:rgba(255,77,109,0.2)">
+      <div class="ds-result-icon">❌</div>
+      <h1 class="ds-result-title" style="color:var(--red)">پرداخت ناموفق</h1>
+      <p class="ds-result-sub">متأسفانه پرداخت در این مرحله تکمیل نشد. اگر مبلغی از حساب شما کسر شده است، از انجام پرداخت مجدد خودداری کنید و با پشتیبانی تماس بگیرید.</p>
+      <div class="ds-alert ds-alert-error show" id="errorMsg" style="margin-bottom:24px;text-align:right">
+        خطا در انجام تراکنش — لطفاً دوباره تلاش کنید.
+      </div>
+      <div class="ds-flex ds-gap-12" style="justify-content:center;flex-wrap:wrap">
+        <a href="checkout.html" class="ds-btn ds-btn-primary">تلاش مجدد</a>
+        <a href="index.html" class="ds-btn ds-btn-ghost">بازگشت به فروشگاه</a>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/js/ui.js"></script>
+<script>
+const p = new URLSearchParams(location.search);
+const msg = p.get('msg');
+if (msg) document.getElementById('errorMsg').textContent = decodeURIComponent(msg);
+</script>
+</body>
+</html>
