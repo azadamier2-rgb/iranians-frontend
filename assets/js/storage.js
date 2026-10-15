@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    HomeShop — assets/js/storage.js
    لایه‌ی ذخیره‌سازی سمت مرورگر + ارتباط خام با API.
 
@@ -19,19 +19,27 @@
    ============================================================ */
 
 const API_ORIGIN = (() => {
-  // When served by local-gateway.js, nginx, or localhost.run, frontend and
-  // backend share one origin and /api is proxied automatically. Keep the
-  // direct-backend fallback only for opening HTML files without a web server.
+  // Priority 1: explicit config in assets/js/config.js (used for online testing)
+  if (window.IRANIANS_CONFIG && window.IRANIANS_CONFIG.API_ORIGIN) {
+    const configured = window.IRANIANS_CONFIG.API_ORIGIN.trim();
+    // Ignore the placeholder value so local dev still works before deploy.
+    if (configured && configured.indexOf('CHANGE_ME') === -1) {
+      return configured.replace(/\/+$/, '');
+    }
+  }
+
+  // Priority 2: same-origin proxy (local-gateway.js, nginx, or production).
   if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     const host = window.location.hostname;
     const port = window.location.port;
     // Local Windows installer serves the frontend on 5500 and backend on 4000.
-    // In production/same-origin proxy deployments, keep the current origin.
     if ((host === 'localhost' || host === '127.0.0.1') && port === '5500') {
       return 'http://localhost:4000';
     }
     return window.location.origin;
   }
+
+  // Priority 3: opened directly as a file, no web server.
   return 'http://localhost:4000';
 })();
 const API_BASE = `${API_ORIGIN}/api`;
