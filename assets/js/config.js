@@ -1,5 +1,7 @@
-﻿// Iranian Store - Backend API Configuration
-// After deploying backend to Railway, replace the URL below.
-window.IRANIANS_CONFIG = {
-  API_ORIGIN: "https://CHANGE_ME_RAILWAY_URL"
-};
+/* Public deployment config for the Iranian shop frontend.
+ * When the frontend is hosted separately (e.g. GitHub Pages), set this to the
+ * HTTPS origin of the deployed backend, with no trailing /api.
+ * Example: window.IRANIANS_API_ORIGIN = 'https://your-backend.example';
+ * This file is public: never put credentials, passwords, or API secrets here.
+ */
+window.IRANIANS_API_ORIGIN = 'https://nodejs-xyhx47.chbkn.dev';

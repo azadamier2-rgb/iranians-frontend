@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    HomeShop — assets/js/storage.js
    لایه‌ی ذخیره‌سازی سمت مرورگر + ارتباط خام با API.
 
@@ -19,27 +19,31 @@
    ============================================================ */
 
 const API_ORIGIN = (() => {
-  // Priority 1: explicit config in assets/js/config.js (used for online testing)
-  if (window.IRANIANS_CONFIG && window.IRANIANS_CONFIG.API_ORIGIN) {
-    const configured = window.IRANIANS_CONFIG.API_ORIGIN.trim();
-    // Ignore the placeholder value so local dev still works before deploy.
-    if (configured && configured.indexOf('CHANGE_ME') === -1) {
-      return configured.replace(/\/+$/, '');
+  // Cross-host deployment (e.g. GitHub Pages frontend + Chabokan API).
+  // config.js may set this public origin; never place a secret in that file.
+  const configured = String(window.IRANIANS_API_ORIGIN || '').trim().replace(/\/+$/, '');
+  if (!configured && (window.location.hostname === 'github.io' || window.location.hostname.endsWith('.github.io'))) {
+    console.error('تنظیم نشده: مقدار window.IRANIANS_API_ORIGIN را در assets/js/config.js روی آدرس API چابکان قرار دهید.');
+  }
+  if (configured) {
+    try {
+      const url = new URL(configured);
+      if (url.protocol === 'https:' || url.protocol === 'http:') return url.origin;
+      console.error('IRANIANS_API_ORIGIN must use http:// or https://');
+    } catch (error) {
+      console.error('Invalid IRANIANS_API_ORIGIN:', error.message);
     }
   }
-
-  // Priority 2: same-origin proxy (local-gateway.js, nginx, or production).
+  // When served by local-gateway.js, nginx, or localhost.run, frontend and
+  // backend share one origin and /api is proxied automatically.
   if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
     const host = window.location.hostname;
     const port = window.location.port;
-    // Local Windows installer serves the frontend on 5500 and backend on 4000.
     if ((host === 'localhost' || host === '127.0.0.1') && port === '5500') {
       return 'http://localhost:4000';
     }
     return window.location.origin;
   }
-
-  // Priority 3: opened directly as a file, no web server.
   return 'http://localhost:4000';
 })();
 const API_BASE = `${API_ORIGIN}/api`;

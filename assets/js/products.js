@@ -18,6 +18,7 @@ const CATEGORY_ICONS = {
   'آشپزخانه': '🍳',
   'نظافت': '🧹',
   'گرمایشی و سرمایشی': '❄️',
+  'تلویزیون': '📺',
 };
 
 function fmt(n) { return Number(n).toLocaleString('fa-IR') + ' تومان'; }

@@ -37,11 +37,21 @@ function renderProduct(p) {
   const specs=[['برند',p.brand],['مدل',p.model],['کد کالا',p.sku],['گارانتی',p.warranty],...Object.entries(p.specifications||{})]; document.getElementById('specsList').innerHTML = specs.filter(([,v])=>v!==null&&v!==undefined&&String(v).trim()!=='').map(([k,v])=>`<div class="ds-flex ds-gap-16" style="justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid var(--line)"><span>${escapeHTML(String(k))}</span><b>${escapeHTML(String(v))}</b></div>`).join('') || `<div>دسته‌بندی: ${escapeHTML(p.category||'')} · موجودی: ${p.stock}</div>`;
   const main = document.getElementById('mainImg'), thumbs = document.getElementById('thumbsRow');
   const images = p.images || [];
+  const mainBox = main.parentElement;
+  mainBox.querySelector('.img-placeholder')?.remove();
+  mainBox.classList.remove('is-empty');
   if (images.length) {
+    main.style.display = 'block';
     main.src = imgUrl(images[0].url); main.alt = p.name || '';
     thumbs.innerHTML = images.map((im,i)=>`<button type="button" class="product-thumb" data-i="${i}"><img src="${imgUrl(im.url)}" alt=""></button>`).join('');
-    thumbs.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ main.src=imgUrl(images[Number(b.dataset.i)].url); });
-  } else { main.removeAttribute('src'); thumbs.innerHTML=''; }
+    thumbs.querySelectorAll('[data-i]').forEach((b,i)=>{ if(i===0) b.classList.add('active'); b.onclick=()=>{ main.style.display='block'; main.src=imgUrl(images[Number(b.dataset.i)].url); thumbs.querySelectorAll('[data-i]').forEach(x=>x.classList.toggle('active',x===b)); }; });
+  } else {
+    main.removeAttribute('src'); main.style.display = 'none'; thumbs.innerHTML = '';
+    const ph = document.createElement('div');
+    ph.className = 'img-placeholder';
+    ph.innerHTML = categoryIcon(p.category);
+    mainBox.appendChild(ph);
+  }
   document.getElementById('reviewsList').innerHTML = reviews.length ? reviews.map(r=>`<div class="ds-card" style="padding:12px;margin-bottom:8px"><b>${escapeHTML(r.user?.name||'کاربر')}</b><div>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div><p>${escapeHTML(r.comment||'')}</p></div>`).join('') : '<p>هنوز نظری ثبت نشده است.</p>';
 }
 function addCurrentToCart(goCheckout=false) {

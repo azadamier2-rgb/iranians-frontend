@@ -406,45 +406,73 @@ async function renderPricingTab() {
   box.innerHTML = '<p class="empty-note">در حال بارگذاری…</p>';
   try {
     const [{ config }, { logs }] = await Promise.all([PricingAPI.getConfig(), PricingAPI.getLogs()]);
-
+    const pct = (n) => (n === null || n === undefined || Number.isNaN(Number(n))) ? '—' : `${Number(n).toLocaleString('fa-IR', { maximumFractionDigits: 2 })}٪`;
     const lastRunText = config.lastRunAt
-      ? `${new Date(config.lastRunAt).toLocaleString('fa-IR')} — ${config.lastRunStatus === 'SUCCESS' ? '✅ موفق' : '❌ ناموفق'}`
+      ? `${new Date(config.lastRunAt).toLocaleString('fa-IR')} — ${config.lastRunStatus === 'SUCCESS' ? '✅ موفق' : config.lastRunStatus === 'FAILED' ? '❌ ناموفق' : '⏭️ رد شد'}`
       : 'هنوز اجرا نشده';
 
     box.innerHTML = `
       <div class="dash-toolbar"><h2>قیمت‌گذاری خودکار بر اساس نرخ ارز</h2></div>
       <p class="hint" style="margin-bottom:16px;">
-        فقط محصولاتی که از فرم ویرایش محصول، «قیمت خودکار» را برایشان فعال کرده‌ای و هزینه دلاری وارد کرده‌ای، شامل این به‌روزرسانی می‌شوند.
-        منبع نرخ ارز و کلید API در فایل <code>src/services/exchangeRateProvider.js</code> و <code>.env</code> بک‌اند تنظیم می‌شود.
+        فقط محصولاتی که در فرم ویرایش محصول «قیمت خودکار» را برایشان فعال کرده‌اید و هزینه‌ی دلاری دارند، شامل این به‌روزرسانی می‌شوند.
+        وقتی نرخ دلار نسبت به نرخ مرجع، حداقل به اندازه‌ی «آستانه» تغییر کند، قیمت آن محصولات دوباره محاسبه می‌شود.
       </p>
 
       <div class="form-error" id="pricingError" role="alert"></div>
       <div class="form-success" id="pricingSuccess" role="status"></div>
 
+      <div class="pricing-stats">
+        <div class="pricing-stat"><span>نرخ مرجع</span><b>${config.referenceRate ? fmt(config.referenceRate) : '—'}</b></div>
+        <div class="pricing-stat"><span>آخرین نرخ دریافتی</span><b>${config.lastFetchedRate ? fmt(config.lastFetchedRate) : '—'}</b></div>
+        <div class="pricing-stat"><span>آخرین تغییر دلار</span><b>${pct(config.lastChangePercent)}</b></div>
+        <div class="pricing-stat"><span>دفعات تعدیل قیمت</span><b>${Number(config.totalAdjustments || 0).toLocaleString('fa-IR')}</b></div>
+      </div>
       <div class="pricing-status-box">
         <div><b>آخرین اجرا:</b> ${escapeHTML(lastRunText)}</div>
-        ${config.lastFetchedRate ? `<div><b>آخرین نرخ دریافت‌شده:</b> ${fmt(config.lastFetchedRate)} به ازای هر دلار</div>` : ''}
         ${config.lastRunMessage ? `<div class="pricing-status-msg">${escapeHTML(config.lastRunMessage)}</div>` : ''}
       </div>
 
-      <div style="max-width:420px; margin-top:18px;">
-        <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600; cursor:pointer;">
+      <div class="pricing-form">
+        <label class="pricing-switch">
           <input type="checkbox" id="pricingAutoEnabled" ${config.autoUpdateEnabled ? 'checked' : ''}>
-          قیمت‌گذاری خودکار فعال باشد (هر ۸ ساعت)
+          <span>قیمت‌گذاری خودکار فعال باشد (هر ۸ ساعت)</span>
         </label>
-        <div class="field" style="margin-top:12px;">
-          <label>درصد سود پیش‌فرض (برای محصولاتی که سود اختصاصی ندارند)</label>
-          <input type="number" id="pricingDefaultMarkup" min="0" max="500" step="1" value="${config.defaultMarkupPercent}">
+        <div class="pricing-fields">
+          <div class="field">
+            <label for="pricingThreshold">آستانه‌ی تغییر دلار (٪)</label>
+            <input type="number" id="pricingThreshold" min="0" max="100" step="0.1" value="${Number(config.usdThresholdPercent ?? 5)}">
+          </div>
+          <div class="field">
+            <label for="pricingAdjust">تعدیل سراسری قیمت (٪)</label>
+            <input type="number" id="pricingAdjust" min="0" max="500" step="0.1" value="${Number(config.productAdjustPercent ?? 2)}">
+          </div>
         </div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
+        <div class="field">
+          <label for="pricingCustomUrl">آدرس سفارشی نرخ ارز (اختیاری)</label>
+          <input type="text" id="pricingCustomUrl" dir="ltr" placeholder="https://…" value="${escapeHTML(config.customRateUrl || '')}">
+        </div>
+        <div class="pricing-actions">
           <button class="btn small" id="pricingSaveBtn">ذخیره تنظیمات</button>
           <button class="btn outline small" id="pricingRunNowBtn">⚡ اجرای دستی الان</button>
         </div>
       </div>
 
+      <div class="pricing-form">
+        <div class="pricing-fields">
+          <div class="field">
+            <label for="pricingRefInput">تنظیم دستی نرخ مرجع (تومان)</label>
+            <input type="number" id="pricingRefInput" min="20000" max="2000000" step="100" placeholder="مثلاً ۶۵۰۰۰">
+          </div>
+          <div class="pricing-actions" style="align-self:end;">
+            <button class="btn outline small" id="pricingRefCurrentBtn">گرفتن نرخ فعلی</button>
+            <button class="btn small" id="pricingRefSaveBtn">ثبت نرخ مرجع</button>
+          </div>
+        </div>
+      </div>
+
       <div class="section-head" style="margin-top:24px;"><h2 style="font-size:16px;">تاریخچه‌ی تغییرات قیمت (کل فروشگاه)</h2></div>
       ${logs.length > 0 ? `
-        <table>
+        <div class="table-scroll"><table>
           <thead><tr><th>محصول</th><th>قیمت قبلی</th><th>قیمت جدید</th><th>منبع</th><th>دلیل</th><th>تاریخ</th></tr></thead>
           <tbody>
             ${logs.map(l => `
@@ -457,49 +485,77 @@ async function renderPricingTab() {
                 <td>${new Date(l.createdAt).toLocaleDateString('fa-IR')}</td>
               </tr>`).join('')}
           </tbody>
-        </table>
+        </table></div>
       ` : '<p class="empty-note">هنوز هیچ تغییر قیمتی ثبت نشده است.</p>'}
     `;
 
+    const errBox = document.getElementById('pricingError');
+    const okBox = document.getElementById('pricingSuccess');
+    const hideMsgs = () => { errBox.style.display = 'none'; okBox.style.display = 'none'; };
+    const showOk = (t) => { okBox.textContent = t; okBox.style.display = 'block'; };
+    const showErr = (t) => { errBox.textContent = t; errBox.style.display = 'block'; };
+
     document.getElementById('pricingSaveBtn').onclick = async () => {
-      const errBox = document.getElementById('pricingError');
-      const okBox = document.getElementById('pricingSuccess');
-      errBox.style.display = 'none';
-      okBox.style.display = 'none';
+      hideMsgs();
+      const thr = Number(document.getElementById('pricingThreshold').value);
+      const adj = Number(document.getElementById('pricingAdjust').value);
+      if (!Number.isFinite(thr) || thr <= 0 || thr > 100) return showErr('آستانه باید عددی بین ۰٫۱ و ۱۰۰ باشد.');
+      if (!Number.isFinite(adj) || adj < 0 || adj > 500) return showErr('تعدیل سراسری باید عددی بین ۰ و ۵۰۰ باشد.');
       try {
         await PricingAPI.updateConfig({
           autoUpdateEnabled: document.getElementById('pricingAutoEnabled').checked,
-          defaultMarkupPercent: Number(document.getElementById('pricingDefaultMarkup').value) || 0,
+          usdThresholdPercent: thr,
+          productAdjustPercent: adj,
+          customRateUrl: document.getElementById('pricingCustomUrl').value.trim() || null,
         });
-        okBox.textContent = 'تنظیمات ذخیره شد.';
-        okBox.style.display = 'block';
-      } catch (err) {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
-      }
+        await renderPricingTab();
+        const ok = document.getElementById('pricingSuccess');
+        ok.textContent = 'تنظیمات ذخیره شد.';
+        ok.style.display = 'block';
+      } catch (err) { showErr(err.message); }
+    };
+
+    document.getElementById('pricingRefCurrentBtn').onclick = async () => {
+      hideMsgs();
+      try {
+        const r = await apiFetch('/pricing/current-rate');
+        document.getElementById('pricingRefInput').value = Math.round(r.currentRate);
+      } catch (err) { showErr(err.message); }
+    };
+
+    document.getElementById('pricingRefSaveBtn').onclick = async () => {
+      hideMsgs();
+      const rate = Number(document.getElementById('pricingRefInput').value);
+      if (!Number.isFinite(rate) || rate < 20000 || rate > 2000000) return showErr('نرخ باید بین ۲۰٬۰۰۰ و ۲٬۰۰۰٬۰۰۰ تومان باشد.');
+      try {
+        await apiFetch('/pricing/set-reference', { method: 'POST', body: JSON.stringify({ rate }) });
+        await renderPricingTab();
+        const ok = document.getElementById('pricingSuccess');
+        ok.textContent = 'نرخ مرجع ثبت شد.';
+        ok.style.display = 'block';
+      } catch (err) { showErr(err.message); }
     };
 
     document.getElementById('pricingRunNowBtn').onclick = async () => {
-      const errBox = document.getElementById('pricingError');
-      const okBox = document.getElementById('pricingSuccess');
-      errBox.style.display = 'none';
-      okBox.style.display = 'none';
+      hideMsgs();
       const btn = document.getElementById('pricingRunNowBtn');
       btn.disabled = true;
       btn.textContent = 'در حال اجرا…';
       try {
-        const result = await PricingAPI.runNow();
+        const { result } = await PricingAPI.runNow();
+        let msg;
         if (result.skipped) {
-          okBox.textContent = result.reason;
+          msg = result.reason;
         } else {
-          okBox.textContent = `اجرا شد — نرخ: ${fmt(result.rate)}, ${result.updatedCount} محصول به‌روزرسانی شد.`;
+          msg = `اجرا شد — ${Number(result.updatedCount).toLocaleString('fa-IR')} محصول با تعدیل ${Number(result.adjustPercent).toLocaleString('fa-IR')}٪ به‌روزرسانی شد (تغییر دلار ${pct(result.changePercent)}، نرخ جدید ${fmt(result.currentRate)}).`;
         }
-        okBox.style.display = 'block';
         await renderPricingTab();
         await renderProductsTab();
+        const ok = document.getElementById('pricingSuccess');
+        ok.textContent = msg;
+        ok.style.display = 'block';
       } catch (err) {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
+        showErr(err.message);
         btn.disabled = false;
         btn.textContent = '⚡ اجرای دستی الان';
       }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -42,6 +42,7 @@
 }
 </style>
   <link rel="stylesheet" href="assets/css/colorful-theme.css">
+<link rel="stylesheet" href="assets/css/polish.css">
 </head>
 <body data-page="products">
 <main>
@@ -50,8 +51,8 @@
     <!-- گالری -->
     <div class="product-gallery">
       <div class="product-main-img">
-        <img id="mainImg" src="assets/images/product-1.jpg" alt="تصویر محصول"
-          onerror="this.parentElement.style.background='var(--surface)';this.style.display='none'">
+        <img id="mainImg" alt="تصویر محصول" style="display:none"
+          onerror="this.style.display='none';this.parentElement.classList.add('is-empty')">
       </div>
       <div class="product-thumbs" id="thumbsRow"></div>
     </div>
@@ -133,8 +134,8 @@
   </div>
 </main>
 
-<section class="ds-card" style="margin-top:24px;padding:18px"><h2>محصولات مرتبط</h2><div id="relatedProducts" class="ds-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px"></div></section>
-<script src="assets/js/config.js"></script>`n<script src="assets/js/storage.js"></script>
+<section class="ds-card related-section"><h2>محصولات مرتبط</h2><div id="relatedProducts" class="ds-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px"></div></section>
+<script src="assets/js/config.js"></script><script src="assets/js/storage.js"></script>
 <script src="assets/js/products.js"></script>
 <script src="assets/js/ui.js"></script>
 <script src="assets/js/product.js"></script>

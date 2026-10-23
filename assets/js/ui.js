@@ -22,7 +22,13 @@ window.h = h;
  * navbar + footer را خودکار inject می‌کند
  */
 
-const API = (typeof API_BASE === 'string' ? API_BASE : ((window.location.protocol === 'http:' || window.location.protocol === 'https:') ? ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '5500' ? 'http://localhost:4000/api' : `${window.location.origin}/api`) : 'http://localhost:4000/api'));
+const API = (typeof API_BASE === 'string' ? API_BASE : (() => {
+  const configured = String(window.IRANIANS_API_ORIGIN || '').trim().replace(/\/+$/, '');
+  if (configured) return `${configured}/api`;
+  return (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+    ? ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '5500' ? 'http://localhost:4000/api' : `${window.location.origin}/api`)
+    : 'http://localhost:4000/api';
+})());
 
 /* ── NAVBAR ──────────────────────────────────────────── */
 function renderNav() {
@@ -120,7 +126,7 @@ function renderFooter() {
       </div>
     </div>
     <div class="ds-footer-bottom">
-      <span>© ۱۴۰۳ خانه‌برق — تمام حقوق محفوظ است</span>
+      <span>© ${(() => { try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date()); } catch (_) { return new Date().getFullYear(); } })()} خانه‌برق — تمام حقوق محفوظ است</span>
       <span>طراحی و توسعه با ❤️</span>
     </div>`;
 
